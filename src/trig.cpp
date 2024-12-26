@@ -13,3 +13,7 @@ double Trig::Sin(double degrees) {
     return sin(toRadians(degrees));
 }
 
+double Trig::avg(double a, double b) {
+    return (a + b) / 2;
+}
+

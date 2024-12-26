@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Motor.h>
 #include <Movement.h>
+#include <LineDetection.h>
 
 #define FLIN1 1
 #define FLIN2 2
@@ -24,6 +25,7 @@ Motor BLMotor(BLIN1, BLIN2, BLEnable);
 Motor BRMotor(BRIN1, BRIN2, BREnable);
 
 Movement move(&FLMotor, &FRMotor, &BLMotor, &BRMotor);
+LineDetection line;
 
 void setup() {
   // put your setup code here, to run once:
@@ -48,8 +50,10 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  Serial.println("Hello World");
-
-  move.movement(0);
+  if (line.isLineDetected()) {
+    move.movement(line.Output());
+  } else {
+    move.movement(0);
+  }
 }
 
