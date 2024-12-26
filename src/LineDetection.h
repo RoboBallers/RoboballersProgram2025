@@ -15,9 +15,7 @@ private:
     MCP3008 adc1;
     MCP3008 adc2;
     MCP3008 adc3;
-    MCP3008 adc4;
-    MCP3008 adc5;
-    MCP3008 adc6;
+
     int sensorVals[48];
     double sinValues[48];
     double cosValues[48];

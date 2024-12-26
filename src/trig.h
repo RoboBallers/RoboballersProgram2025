@@ -7,6 +7,7 @@ public:
     static double Sin(double angle);
     static double Cos(double angle);
     static double avg(double a, double b);
+    static double toDegrees(double radians);
 };
 
 #endif

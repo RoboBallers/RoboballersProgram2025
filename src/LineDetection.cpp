@@ -37,15 +37,6 @@ int* LineDetection::getSensorValues() {
             case 2:
                 vals[i] = adc3.analogRead(channel);
                 break;
-            case 3:
-                vals[i] = adc4.analogRead(channel);
-                break;
-            case 4:
-                vals[i] = adc5.analogRead(channel);
-                break;
-            case 5:
-                vals[i] = adc6.analogRead(channel);
-                break;
         }   
 
     }

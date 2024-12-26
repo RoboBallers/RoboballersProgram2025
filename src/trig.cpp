@@ -5,6 +5,10 @@ double Trig::toRadians(double degrees) {
     return degrees * (M_PI / 180);
 }
 
+double Trig::toDegrees(double radians) {
+    return radians * (180 / M_PI);
+}
+
 double Trig::Cos(double degrees) {
     return cos(toRadians(degrees));
 }
@@ -16,4 +20,5 @@ double Trig::Sin(double degrees) {
 double Trig::avg(double a, double b) {
     return (a + b) / 2;
 }
+
 
