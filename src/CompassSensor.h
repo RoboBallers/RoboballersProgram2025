@@ -6,8 +6,14 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 
-class CompasSensor {
+class CompassSensor {
     public:
-    CompasSensor();
+    CompassSensor();
+    void callibrate();
+    int getOrientation();
+
+    private:
+    Adafruit_BNO055 bno;
+    sensors_event_t event;
 };
 #endif // COMPASSSENSOR_H
