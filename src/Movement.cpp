@@ -9,7 +9,8 @@ Movement::Movement(Motor *FLMotor, Motor *FRMotor, Motor *BLMotor, Motor *BRMoto
     this->BRMotor = BRMotor;
 }
 
-void Movement::movement(double intended_angle) {
+// Need to add orientation to the movement function
+void Movement::movement(double intended_angle, double orientation) {
     double powerFR = Trig::Sin(intended_angle - 53);
     double powerRR = Trig::Sin(intended_angle - 127);
     double powerRL = Trig::Sin(intended_angle - 233);
@@ -22,8 +23,8 @@ void Movement::movement(double intended_angle) {
     powerRR = powerRR / max_power;
     powerRL = powerRL / max_power;
 
-    this->FLMotor->setSpeed(speedfactor);
-    this->FRMotor->setSpeed(speedfactor);
-    this->BLMotor->setSpeed(speedfactor);
-    this->BRMotor->setSpeed(speedfactor);
+    this->FLMotor->setSpeed(speedfactor * powerFL);
+    this->FRMotor->setSpeed(speedfactor * powerFR);
+    this->BLMotor->setSpeed(speedfactor * powerRL);
+    this->BRMotor->setSpeed(speedfactor * powerRR);
 }
