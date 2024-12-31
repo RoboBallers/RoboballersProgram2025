@@ -3,6 +3,7 @@
 
 #include <Motor.h>
 #include <CompassSensor.h>
+#include <PID_v1.h>
 
 class Movement {
 private:
@@ -11,15 +12,21 @@ private:
     Motor *BLMotor;
     Motor *BRMotor;
 
-    double speedfactor = 1;
-    double max_power; 
+    CompassSensor DirectionSensor;
+    PID myPID;
 
-    CompassSensor *compass;
+    double max_power; 
+    double Setpoint, Input, Output;
+
+    double kp = 0.35;
+    double ki = 0;
+    double kd = 0.001;
 
 public:
     Movement(Motor *FLMotor, Motor *FRMotor, Motor *BLMotor, Motor *BRMotor);
-    void movement(double degrees, double orientation);
-    double orbit(double degrees);
+    void movement(double degrees, double speed_factor);
+    double findCorrection(double orientationOffsetFix);
+    double CorrectionAngle();
     
 
 };

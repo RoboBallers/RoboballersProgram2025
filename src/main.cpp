@@ -2,6 +2,9 @@
 #include <Motor.h>
 #include <Movement.h>
 #include <LineDetection.h>
+#include <CompassSensor.h>
+#include <BallFinding.h>
+#include <Switches.h>
 
 #define FLIN1 1
 #define FLIN2 2
@@ -19,6 +22,9 @@
 #define BRIN2 8
 #define BREnable 12
 
+double OffsetedOrientation = 0;
+int countCalibrate = 0;
+
 Motor FLMotor(FLIN1, FLIN2, FLEnable);
 Motor FRMotor(FRIN1, FRIN2, FREnable);
 Motor BLMotor(BLIN1, BLIN2, BLEnable);
@@ -26,6 +32,9 @@ Motor BRMotor(BRIN1, BRIN2, BREnable);
 
 Movement move(&FLMotor, &FRMotor, &BLMotor, &BRMotor);
 LineDetection line;
+CompassSensor DirectionSensor;
+BallFinding ballFinding;
+Switches switches;
 
 void setup() {
   // put your setup code here, to run once:
@@ -50,10 +59,21 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if (line.isLineDetected()) {
-    move.movement(line.Output());
+  if (!switches.isCalibrate()) {
+    countCalibrate = 0;
   } else {
-    move.movement(0);
+    countCalibrate++;
+    if (countCalibrate == 0) {
+      DirectionSensor.callibrate();
+    }
+    DirectionSensor.zeroedAngle = DirectionSensor.getOrientation();
+  }
+
+  
+  if (line.isLineDetected()) {
+    move.movement(line.Output(), 1);
+  } else {
+    move.movement(ballFinding.orbit(), 1);
   }
 }
 

@@ -11,6 +11,7 @@ class CompassSensor {
     CompassSensor();
     void callibrate();
     int getOrientation();
+    double zeroedAngle;
 
     private:
     Adafruit_BNO055 bno;

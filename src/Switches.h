@@ -6,7 +6,7 @@
 
 class Switches {
     public:
-    Switch();
+    Switches();
     bool isBlue();
     bool isStart();
     bool isCalibrate();
