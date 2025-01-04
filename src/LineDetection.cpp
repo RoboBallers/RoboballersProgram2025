@@ -17,6 +17,8 @@ LineDetection::LineDetection() {
         // sinValues[i] = sin(sensorAngles[i]);
         cosValues[i] = Trig::Cos(sensorAngles[i]);
     }
+    crossLine = false;
+    initialAngle = -1;
 
 }
 
@@ -59,7 +61,7 @@ int* LineDetection::getSensorValues() {
 
 
 void LineDetection::getIntersectionAngle(int* calibrateVal, int* sensorVals) {
-    for (int i = 0; i < 48; i++) {
+    for (int i = 0; i < 24; i++) {
         if (sensorVals[i] > calibrateVal[i]) {
             sensorVals[i] = 1;
             lineDetected = true;
@@ -75,8 +77,8 @@ void LineDetection::getIntersectionAngle(int* calibrateVal, int* sensorVals) {
     int theta1 = 0;
     int theta2 = 0;
     double minDotProduct = 2;
-    for (int i = 0; i < 48; i++) {
-        for (int j = 0; j < 48; j++) {
+    for (int i = 0; i < 24; i++) {
+        for (int j = 0; j < 24; j++) {
             if (sensorVals[i] == 1 && sensorVals[j] == 1) {
                 double dotProduct = Trig::Cos(j * 15 - i * 15);
                 if (dotProduct < minDotProduct) {
@@ -94,17 +96,52 @@ void LineDetection::getIntersectionAngle(int* calibrateVal, int* sensorVals) {
     theta2 = max(temp, theta2);
 
     if (theta2 - theta1 < 180) {
-        sensorAngle = Trig::avg(theta1, theta2);
+        intersectionAngle = Trig::avg(theta1, theta2);
+        sensorAngle = theta2-theta1;
     } else {
-        sensorAngle = Trig::avg(theta1, theta2 - 360);
+        intersectionAngle = Trig::avg(theta1, theta2 - 360);
+        sensorAngle = (360-(theta2 - theta1));
     }
 
 }
 
-bool LineDetection::isLineDetected() {
-    return lineDetected;
+double LineDetection::getChord() {
+    // diam/maxdiam
+    return (2 * Trig::Sin(sensorAngle/2));
 }
 
+
 double LineDetection::Output() {
-    return sensorAngle > 180 ? sensorAngle - 180: sensorAngle + 180;
+    if (lineDetected) {
+        getIntersectionAngle(cal->calibrateVal, getSensorValues());
+        if (initialAngle == -1) {
+            initialAngle = intersectionAngle;
+        }
+        currentAngle = intersectionAngle;
+        angleDiff = abs(currentAngle - initialAngle);
+        initialAngle = currentAngle;
+        if (angleDiff > 180) {
+            angleDiff = 360 - angleDiff;
+        }
+        if (angleDiff > 100 && !crossLine) {
+            crossLine = true;
+            angleDiff = 0;
+        }
+        if (crossLine) {
+            intersectionAngle += 180;
+            if (intersectionAngle > 360) {
+                intersectionAngle -= 360;
+            }
+            if (angleDiff > 100) {
+                crossLine = false;
+            }
+        }
+    } else {
+        crossLine = false;
+        initialAngle = -1;
+        intersectionAngle = -1;
+    }
+
+    angleDiff = 0;
+    return intersectionAngle;
 }
