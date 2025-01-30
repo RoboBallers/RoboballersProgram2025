@@ -25,55 +25,62 @@
 double OffsetedOrientation = 0;
 int countCalibrate = 0;
 
-Motor FLMotor(FLIN1, FLIN2, FLEnable);
-Motor FRMotor(FRIN1, FRIN2, FREnable);
-Motor BLMotor(BLIN1, BLIN2, BLEnable);
-Motor BRMotor(BRIN1, BRIN2, BREnable);
+// Motor FLMotor(FLIN1, FLIN2, FLEnable);
+// Motor FRMotor(FRIN1, FRIN2, FREnable);
+// Motor BLMotor(BLIN1, BLIN2, BLEnable);
+// Motor BRMotor(BRIN1, BRIN2, BREnable);
 
-Movement move(&FLMotor, &FRMotor, &BLMotor, &BRMotor);
-LineDetection line;
-CompassSensor DirectionSensor;
-BallFinding ballFinding;
-Switches switches;
+MCP3008 adc2;
+
+
+// Movement move(&FLMotor, &FRMotor, &BLMotor, &BRMotor);
+// LineDetection line;
+// CompassSensor DirectionSensor;
+// BallFinding ballFinding;
+// Switches switches;
 
 void setup() {
   // put your setup code here, to run once:
-  pinMode(FLIN1, OUTPUT);
-  pinMode(FLIN2, OUTPUT);
-  pinMode(FLEnable, OUTPUT);
+  // pinMode(FLIN1, OUTPUT);
+  // pinMode(FLIN2, OUTPUT);
+  // pinMode(FLEnable, OUTPUT);
 
-  pinMode(FRIN1, OUTPUT);
-  pinMode(FRIN2, OUTPUT);
-  pinMode(FREnable, OUTPUT);
+  // pinMode(FRIN1, OUTPUT);
+  // pinMode(FRIN2, OUTPUT);
+  // pinMode(FREnable, OUTPUT);
 
-  pinMode(BLIN1, OUTPUT);
-  pinMode(BLIN2, OUTPUT);
-  pinMode(BLEnable, OUTPUT);
+  // pinMode(BLIN1, OUTPUT);
+  // pinMode(BLIN2, OUTPUT);
+  // pinMode(BLEnable, OUTPUT);
 
-  pinMode(BRIN1, OUTPUT);
-  pinMode(BRIN2, OUTPUT);
-  pinMode(BREnable, OUTPUT);
+  // pinMode(BRIN1, OUTPUT);
+  // pinMode(BRIN2, OUTPUT);
+  // pinMode(BREnable, OUTPUT);
+  adc2.begin(37,11,12,13);
 
   Serial.begin(9600);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  if (!switches.isCalibrate()) {
-    countCalibrate = 0;
-  } else {
-    countCalibrate++;
-    if (countCalibrate == 0) {
-      DirectionSensor.callibrate();
-    }
-    DirectionSensor.zeroedAngle = DirectionSensor.getOrientation();
-  }
+  // if (!switches.isCalibrate()) {
+  //   countCalibrate = 0;
+  // } else {
+  //   countCalibrate++;
+  //   if (countCalibrate == 0) {
+  //     DirectionSensor.callibrate();
+  //   }
+  //   DirectionSensor.zeroedAngle = DirectionSensor.getOrientation();
+  // }
 
   
-  if (line.isLineDetected()) {
-    move.movement(line.Output(), 1);
-  } else {
-    move.movement(ballFinding.orbit(), 1);
-  }
+  // if (line.lineDetected) {
+  //   move.movement(line.Output(), 1);
+  // } else {
+  //   move.movement(ballFinding.orbit(), 1);
+  // }
+  // Serial.println(ballFinding.ballAngle());
+  Serial.println(adc2.analogRead(3));
+  delay(100);
+  // Serial.println("Hello World");
 }
 

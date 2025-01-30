@@ -19,12 +19,12 @@ LineDetection::LineDetection() {
     }
     crossLine = false;
     initialAngle = -1;
+    linefollow = false;
+    correctionValLineFollow = 25;
 
 }
 
-int* LineDetection::getSensorValues() {
-    int* vals = new int[24];
-
+void LineDetection::getSensorValues() {
     for (int i = 0; i < 24; i++) {
         int adcnum = i / 8;
         int channel  = i%8;
@@ -54,9 +54,6 @@ int* LineDetection::getSensorValues() {
         }
         }
     }
-
-    return vals;
-
 }
 
 
@@ -111,29 +108,40 @@ double LineDetection::getChord() {
 }
 
 
+
 double LineDetection::Output() {
     if (lineDetected) {
-        getIntersectionAngle(cal->calibrateVal, getSensorValues());
-        if (initialAngle == -1) {
-            initialAngle = intersectionAngle;
-        }
-        currentAngle = intersectionAngle;
-        angleDiff = abs(currentAngle - initialAngle);
-        initialAngle = currentAngle;
-        if (angleDiff > 180) {
-            angleDiff = 360 - angleDiff;
-        }
-        if (angleDiff > 100 && !crossLine) {
-            crossLine = true;
-            angleDiff = 0;
-        }
-        if (crossLine) {
-            intersectionAngle += 180;
-            if (intersectionAngle > 360) {
-                intersectionAngle -= 360;
+        // getIntersectionAngle(cal->calibrateVal, getSensorValues());
+        if (linefollow) {
+            if ((crossLine && (getChord() < chordThreshold)) ) {
+                if (getChord() < 1) {
+                    return -correctionValLineFollow;
+                } else {
+                    return correctionValLineFollow;
+                }
             }
-            if (angleDiff > 100) {
-                crossLine = false;
+        } else {
+            if (initialAngle == -1) {
+            initialAngle = intersectionAngle;
+            }
+            currentAngle = intersectionAngle;
+            angleDiff = abs(currentAngle - initialAngle);
+            initialAngle = currentAngle;
+            if (angleDiff > 180) {
+                angleDiff = 360 - angleDiff;
+            }
+            if (angleDiff > 100 && !crossLine) {
+                crossLine = true;
+                angleDiff = 0;
+            }
+            if (crossLine) {
+                intersectionAngle += 180;
+                if (intersectionAngle > 360) {
+                    intersectionAngle -= 360;
+                }
+                if (angleDiff > 100) {
+                    crossLine = false;
+                }
             }
         }
     } else {

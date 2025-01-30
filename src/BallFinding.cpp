@@ -8,7 +8,7 @@ BallFinding::BallFinding() {
 }
 
 double BallFinding::ballAngle() {
-    int* vals = new int[24];
+    int vals[24];
     double totalCos = 0;
     double totalSin = 0;
 
@@ -43,8 +43,8 @@ double BallFinding::ballAngle() {
     }
 
     for (int i = 0; i < 24; i++) {
-        totalCos += (vals[i] * Trig::Cos(i * 15));
-        totalSin += (vals[i] * Trig::Sin(i * 15));
+        totalCos += (-vals[i] * Trig::Cos(i * 15));
+        totalSin += (-vals[i] * Trig::Sin(i * 15));
     }
 
     double ballAngle = Trig::toDegrees(atan2(totalSin, totalCos));
@@ -84,4 +84,6 @@ double BallFinding::orbit() {
     }
 
     return orbit_val;
+
+    // add in dampen
 }

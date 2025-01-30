@@ -20,9 +20,9 @@ class BallFinding {
     MCP3008 adc4;
     MCP3008 adc5;
     MCP3008 adc6;
-    int sensorVals[48];
-    double sinValues[48];
-    double cosValues[48];
+    int sensorVals[24];
+    double sinValues[24];
+    double cosValues[24];
 
 };
 
