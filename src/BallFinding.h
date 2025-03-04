@@ -8,19 +8,20 @@ class BallFinding {
     BallFinding();
     double ballAngle();
     double orbit();
+    int sensorVals[24];
+
 
     private:
     // Note need to change the chip selector pins to ensure that the ir sensor and line sensor r different
-    int cs1 = 30;
-    int cs2 = 29;
-    int cs3 = 28;
-    int sck = 35;
-    int mosi = 13;
-    int miso = 14;
+    int cs1 = 38;
+    int cs2 = 37;
+    int cs3 = 36;
+    int sck = 13;
+    int mosi = 11;
+    int miso = 12;
     MCP3008 adc4;
     MCP3008 adc5;
     MCP3008 adc6;
-    int sensorVals[24];
     double sinValues[24];
     double cosValues[24];
 

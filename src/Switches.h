@@ -1,6 +1,3 @@
-// 19 - start
-// 20 - blue
-// 21 - calibrate
 #ifndef SWITCHES_H
 #define SWITCHES_H
 
@@ -8,13 +5,14 @@ class Switches {
     public:
     Switches();
     bool isBlue();
-    bool isStart();
-    bool isCalibrate();
+    // bool isStart();
+    bool isCalibrateAngle();
+    bool isCalibrateLine();
 
     private:
-    int startPin = 19;
-    int bluePin = 20;
-    int calibratePin = 21;
+    int startPin = -1;
+    int bluePin = -1;
+    int calibrateAnglePin = 29;
 };
 
 #endif // SWITCHES_H

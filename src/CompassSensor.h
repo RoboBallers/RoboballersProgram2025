@@ -11,6 +11,7 @@ class CompassSensor {
     CompassSensor();
     void callibrate();
     int getOrientation();
+    int currentOffset();
     double zeroedAngle;
 
     private:

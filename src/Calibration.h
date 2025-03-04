@@ -7,7 +7,7 @@ class Calibration {
         void calibrate(); 
         int calibrateVal[48];
     private:
-        LineDetection *lineDetection;
+        // LineDetection *lineDetection;
 
 };
 

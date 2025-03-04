@@ -30,7 +30,9 @@ int countCalibrate = 0;
 // Motor BLMotor(BLIN1, BLIN2, BLEnable);
 // Motor BRMotor(BRIN1, BRIN2, BREnable);
 
-MCP3008 adc2;
+BallFinding ballFinding;
+CompassSensor compassSensor;
+Switches switches;
 
 
 // Movement move(&FLMotor, &FRMotor, &BLMotor, &BRMotor);
@@ -56,31 +58,39 @@ void setup() {
   // pinMode(BRIN1, OUTPUT);
   // pinMode(BRIN2, OUTPUT);
   // pinMode(BREnable, OUTPUT);
-  adc2.begin(37,11,12,13);
 
   Serial.begin(9600);
+
+  compassSensor.callibrate();
+}
+
+void testingballSensors() {
+  double ballAngle = ballFinding.ballAngle();
+  Serial.println("Ball Angle: " + String(ballAngle));
+  for (int i = 0; i < 24; i++) {
+    Serial.println("Sensor " + String(i) + String(" ") + String(ballFinding.sensorVals[i]));
+  }
+}
+
+void testingCompass() {
+  Serial.println("Current Desired Angle is " + String(compassSensor.zeroedAngle));
+  Serial.println("Current offset is: " + String(compassSensor.currentOffset()));
 }
 
 void loop() {
-  // if (!switches.isCalibrate()) {
-  //   countCalibrate = 0;
-  // } else {
-  //   countCalibrate++;
-  //   if (countCalibrate == 0) {
-  //     DirectionSensor.callibrate();
-  //   }
-  //   DirectionSensor.zeroedAngle = DirectionSensor.getOrientation();
-  // }
+  if (switches.isCalibrateAngle()) {
+    compassSensor.zeroedAngle = compassSensor.getOrientation();
+  }
+
+ 
+  delay(300);
 
   
   // if (line.lineDetected) {
-  //   move.movement(line.Output(), 1);
+    // move.movement(line.Output(), 1);
   // } else {
   //   move.movement(ballFinding.orbit(), 1);
   // }
-  // Serial.println(ballFinding.ballAngle());
-  Serial.println(adc2.analogRead(3));
-  delay(100);
-  // Serial.println("Hello World");
+ 
 }
 

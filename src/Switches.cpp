@@ -1,14 +1,13 @@
-#include <switches.h>
+#include <Switches.h>
 #include <Arduino.h>
 
+Switches::Switches() {
+    
+}
 bool Switches::isBlue() {
     return digitalRead(bluePin) == HIGH;
 }
 
-bool Switches::isStart() {
-    return digitalRead(startPin) == HIGH;
-}
-
-bool Switches::isCalibrate() {
-    return digitalRead(calibratePin) == HIGH;
+bool Switches::isCalibrateAngle() {
+    return digitalRead(calibrateAnglePin) == HIGH;
 }

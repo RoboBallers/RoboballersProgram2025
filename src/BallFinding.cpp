@@ -8,7 +8,6 @@ BallFinding::BallFinding() {
 }
 
 double BallFinding::ballAngle() {
-    int vals[24];
     double totalCos = 0;
     double totalSin = 0;
 
@@ -18,33 +17,38 @@ double BallFinding::ballAngle() {
 
         switch (adcnum) {
             case 0:
-                vals[i] = adc4.analogRead(channel);
+                sensorVals[i] = adc4.analogRead(channel);
                 break;
             case 1:
-                vals[i] = adc5.analogRead(channel);
+                sensorVals[i] = adc6.analogRead(channel);
                 break;
             case 2:
-                vals[i] = adc6.analogRead(channel);
+                sensorVals[i] = adc5.analogRead(8 - channel);
                 break;
         }   
 
     }
 
     for (int i = 0; i < 24; i++) {
-        if (vals[i] > 1020 || vals[i] < 5) {
+        // This assumes that when i is 6 or 9 the sensor values are perfect
+        if (i == 7 || i == 8) {
+            sensorVals[i] = (sensorVals[6] + sensorVals[9])/2;
+        }
+        if (sensorVals[i] > 1020 || sensorVals[i] < 5) {
             if (i == 0) {
-                vals[i] = vals[i+1];
+                sensorVals[i] = sensorVals[i+1];
             } else if (i == 23) {
-                vals[i] = vals[i-1];
+                sensorVals[i] = sensorVals[i-1];
             } else {
-            vals[i] = (vals[i+1] + vals[i-1]) / 2;
+            sensorVals[i] = (sensorVals[i+1] + sensorVals[i-1]) / 2;
         }
         }
     }
 
+    // Front and Center is on the side of the main switch and battery
     for (int i = 0; i < 24; i++) {
-        totalCos += (-vals[i] * Trig::Cos(i * 15));
-        totalSin += (-vals[i] * Trig::Sin(i * 15));
+        totalCos += (-sensorVals[i] * Trig::Cos(i * 15 - 15));
+        totalSin += (-sensorVals[i] * Trig::Sin(i * 15 - 15));
     }
 
     double ballAngle = Trig::toDegrees(atan2(totalSin, totalCos));
