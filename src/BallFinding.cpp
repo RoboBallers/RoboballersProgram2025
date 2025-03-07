@@ -29,21 +29,17 @@ double BallFinding::ballAngle() {
 
     }
 
-    for (int i = 0; i < 24; i++) {
-        // This assumes that when i is 6 or 9 the sensor values are perfect
-        if (i == 7 || i == 8) {
-            sensorVals[i] = (sensorVals[6] + sensorVals[9])/2;
-        }
-        if (sensorVals[i] > 1020 || sensorVals[i] < 5) {
-            if (i == 0) {
-                sensorVals[i] = sensorVals[i+1];
-            } else if (i == 23) {
-                sensorVals[i] = sensorVals[i-1];
-            } else {
-            sensorVals[i] = (sensorVals[i+1] + sensorVals[i-1]) / 2;
-        }
-        }
-    }
+    // for (int i = 0; i < 24; i++) {
+    //     if (sensorVals[i] > 1020 || sensorVals[i] < 5) {
+    //         if (i == 0) {
+    //             sensorVals[i] = sensorVals[i+1];
+    //         } else if (i == 23) {
+    //             sensorVals[i] = sensorVals[i-1];
+    //         } else {
+    //         sensorVals[i] = (sensorVals[i+1] + sensorVals[i-1]) / 2;
+    //     }
+    //     }
+    // }
 
     // Front and Center is on the side of the main switch and battery
     for (int i = 0; i < 24; i++) {

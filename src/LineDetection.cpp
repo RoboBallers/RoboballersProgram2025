@@ -6,7 +6,6 @@ LineDetection::LineDetection() {
     // uint8_t csPin, uint8_t mosiPin, uint8_t misoPin, uint8_t sckPin
     lineDetected = false;
     sensorAngle = 0;
-    int sensorVals[24];
     adc1.begin(cs1,mosi,miso,sck);
     adc2.begin(cs2,mosi,miso,sck);
     adc3.begin(cs3,mosi,miso,sck);

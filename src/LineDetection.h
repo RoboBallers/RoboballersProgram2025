@@ -13,6 +13,8 @@ public:
     double getChord();
     bool lineDetected;
     bool startLineFollow();
+    int vals[24];
+
 
 
 private:
@@ -22,17 +24,17 @@ private:
 
     // Calibration *cal;
 
-    int sensorVals[48];
-    double sinValues[48];
-    double cosValues[48];
-    int sensorAngles[48];
+    int sensorVals[24];
+    double sinValues[24];
+    double cosValues[24];
+    int sensorAngles[24];
     double sensorAngle;
-    int cs1 = 30;
-    int cs2 = 29;
-    int cs3 = 28;
-    int sck = 35;
-    int mosi = 13;
-    int miso = 14;
+    int cs1 = 33;
+    int cs2 = 34;
+    int cs3 = 35;
+    int sck = 13;
+    int mosi = 11;
+    int miso = 12;
     bool crossLine;
     double intersectionAngle;
     double initialAngle;
@@ -41,7 +43,6 @@ private:
     bool linefollow;
     double correctionValLineFollow;
     double chordThreshold = 0.85;
-    int vals[24];
 };
 
 #endif // LINEDETECTION_H

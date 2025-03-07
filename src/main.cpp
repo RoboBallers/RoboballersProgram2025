@@ -33,6 +33,7 @@ int countCalibrate = 0;
 BallFinding ballFinding;
 CompassSensor compassSensor;
 Switches switches;
+LineDetection linedetection;
 
 
 // Movement move(&FLMotor, &FRMotor, &BLMotor, &BRMotor);
@@ -61,7 +62,7 @@ void setup() {
 
   Serial.begin(9600);
 
-  compassSensor.callibrate();
+  // compassSensor.callibrate();
 }
 
 void testingballSensors() {
@@ -69,6 +70,13 @@ void testingballSensors() {
   Serial.println("Ball Angle: " + String(ballAngle));
   for (int i = 0; i < 24; i++) {
     Serial.println("Sensor " + String(i) + String(" ") + String(ballFinding.sensorVals[i]));
+  }
+}
+
+void testingLineSensors() {
+  linedetection.getSensorValues();
+  for (int i = 0; i < 24; i++) {
+    Serial.println("Sensor " + String(i) + String(" ") + String(linedetection.vals[i]));
   }
 }
 
@@ -82,8 +90,22 @@ void loop() {
     compassSensor.zeroedAngle = compassSensor.getOrientation();
   }
 
+  testingballSensors();
+  Serial.println("LINE SENSORS");
+  Serial.println("-----------");
+  Serial.println("-----------");
+  Serial.println("-----------");
+  Serial.println();
+  testingLineSensors();
+
+  Serial.println("IR SENSORS");
+  Serial.println("-----------");
+  Serial.println("-----------");
+  Serial.println("-----------");
+  Serial.println();
  
-  delay(300);
+  delay(500);
+
 
   
   // if (line.lineDetected) {
