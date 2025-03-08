@@ -5,6 +5,7 @@
 #include <CompassSensor.h>
 #include <BallFinding.h>
 #include <Switches.h>
+#include <Goal.h>
 
 #define FLIN1 1
 #define FLIN2 2
@@ -34,6 +35,7 @@ BallFinding ballFinding;
 CompassSensor compassSensor;
 Switches switches;
 LineDetection linedetection;
+Goal goal;
 
 
 // Movement move(&FLMotor, &FRMotor, &BLMotor, &BRMotor);
@@ -61,6 +63,7 @@ void setup() {
   // pinMode(BREnable, OUTPUT);
 
   Serial.begin(9600);
+  goal.beginCamera();
 
   // compassSensor.callibrate();
 }
