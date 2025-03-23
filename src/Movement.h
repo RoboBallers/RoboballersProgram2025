@@ -7,12 +7,12 @@
 
 class Movement {
 private:
-    Motor *FLMotor;
-    Motor *FRMotor;
-    Motor *BLMotor;
-    Motor *BRMotor;
+    Motor FLMotor;
+    Motor FRMotor;
+    Motor BLMotor;
+    Motor BRMotor;
 
-    CompassSensor DirectionSensor;
+    CompassSensor& DirectionSensor;
     PID myPID;
 
     double max_power; 
@@ -23,7 +23,7 @@ private:
     double kd = 0.001;
 
 public:
-    Movement(Motor *FLMotor, Motor *FRMotor, Motor *BLMotor, Motor *BRMotor);
+    Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor, CompassSensor& sensor);
     void movement(double degrees, double speed_factor);
     double findCorrection(double orientationOffsetFix);
     double CorrectionAngle();
@@ -31,4 +31,4 @@ public:
 
 };
 
-#endif // MOVEMENT_H
+#endif

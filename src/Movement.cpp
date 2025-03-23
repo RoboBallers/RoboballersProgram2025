@@ -4,13 +4,14 @@
 #include <math.h>
 
 
-Movement::Movement(Motor *FLMotor, Motor *FRMotor, Motor *BLMotor, Motor *BRMotor)
-    : myPID(&Input, &Output, &Setpoint, kp, ki, kd, REVERSE) {
-    this->FLMotor = FLMotor;
-    this->FRMotor = FRMotor;   
-    this->BLMotor = BLMotor;
-    this->BRMotor = BRMotor;
+Movement::Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor, CompassSensor& sensor)
+    : FLMotor(FLMotor), FRMotor(FRMotor), BLMotor(BLMotor), BRMotor(BRMotor),
+      DirectionSensor(sensor), 
+      myPID(&Input, &Output, &Setpoint, kp, ki, kd, REVERSE)  
+{
+    myPID.SetMode(AUTOMATIC); 
 }
+
 
 double Movement::CorrectionAngle() {
     double OffsetedOrientation;
@@ -25,6 +26,8 @@ double Movement::CorrectionAngle() {
     } else {
       OffsetedOrientation = -(DirectionSensor.zeroedAngle - DirectionSensor.getOrientation());
     }
+
+    return OffsetedOrientation;
 }
 
 double Movement::findCorrection(double orientationVal) {
@@ -82,15 +85,16 @@ void Movement::movement(double intended_angle, double speedfactor) {
     powerRR += correction;
     powerRL += correction;
 
-    max_power = max(max(abs(powerFR), abs(powerFL)), max(abs(powerRR), abs(powerRL)));
+    max_power = fmax(fmax(abs(powerFR), abs(powerFL)), fmax(abs(powerRR), abs(powerRL)));
 
     powerFR = powerFR / max_power;
     powerFL = powerFL / max_power;
     powerRR = powerRR / max_power;
     powerRL = powerRL / max_power;
 
-    this->FLMotor->setSpeed(speedfactor * powerFL);
-    this->FRMotor->setSpeed(speedfactor * powerFR);
-    this->BLMotor->setSpeed(speedfactor * powerRL);
-    this->BRMotor->setSpeed(speedfactor * powerRR);
+    this->FLMotor.setSpeed(speedfactor * powerFL);
+    this->FRMotor.setSpeed(speedfactor * powerFR);
+    this->BLMotor.setSpeed(speedfactor * powerRL);
+    this->BRMotor.setSpeed(speedfactor * powerRR);
+
 }

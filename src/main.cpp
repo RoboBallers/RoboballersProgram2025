@@ -7,35 +7,37 @@
 #include <Switches.h>
 #include <Goal.h>
 
-#define FLIN1 1
-#define FLIN2 2
-#define FLEnable 9
+const int FLIN1 = 2;
+const int FLIN2 = 3;
+const int FLEnable = 24;
 
-#define FRIN1 3
-#define FRIN2 4
-#define FREnable 10
+const int FRIN1 = 4;
+const int FRIN2 = 5;
+const int FREnable = 25;
 
-#define BLIN1 5
-#define BLIN2 6
-#define BLEnable 11
+const int BRIN1 = 6;
+const int BRIN2 = 9;
+const int BREnable = 22;
 
-#define BRIN1 7
-#define BRIN2 8
-#define BREnable 12
+const int BLIN1 = 31;
+const int BLIN2 = 32;
+const int BLEnable = 23;
 
 double OffsetedOrientation = 0;
 int countCalibrate = 0;
 
-// Motor FLMotor(FLIN1, FLIN2, FLEnable);
-// Motor FRMotor(FRIN1, FRIN2, FREnable);
-// Motor BLMotor(BLIN1, BLIN2, BLEnable);
-// Motor BRMotor(BRIN1, BRIN2, BREnable);
+
 
 BallFinding ballFinding;
 CompassSensor compassSensor;
 Switches switches;
 LineDetection linedetection;
 Goal goal;
+Motor FL(FLIN1, FLIN2, FLEnable);
+Motor FR(FRIN1, FRIN2, FREnable);
+Motor BL(BLIN1, BLIN2, BLEnable);
+Motor BR(BRIN1, BRIN2, BREnable);
+// Movement movement(FL, FR, BL, BR,compassSensor);
 
 
 // Movement move(&FLMotor, &FRMotor, &BLMotor, &BRMotor);
@@ -46,24 +48,26 @@ Goal goal;
 
 void setup() {
   // put your setup code here, to run once:
-  // pinMode(FLIN1, OUTPUT);
-  // pinMode(FLIN2, OUTPUT);
-  // pinMode(FLEnable, OUTPUT);
+  pinMode(FLIN1, OUTPUT);
+  pinMode(FLIN2, OUTPUT);
+  pinMode(FLEnable, OUTPUT);
 
-  // pinMode(FRIN1, OUTPUT);
-  // pinMode(FRIN2, OUTPUT);
-  // pinMode(FREnable, OUTPUT);
+  pinMode(FRIN1, OUTPUT);
+  pinMode(FRIN2, OUTPUT);
+  pinMode(FREnable, OUTPUT);
 
-  // pinMode(BLIN1, OUTPUT);
-  // pinMode(BLIN2, OUTPUT);
-  // pinMode(BLEnable, OUTPUT);
+  pinMode(BLIN1, OUTPUT);
+  pinMode(BLIN2, OUTPUT);
+  pinMode(BLEnable, OUTPUT);
 
-  // pinMode(BRIN1, OUTPUT);
-  // pinMode(BRIN2, OUTPUT);
-  // pinMode(BREnable, OUTPUT);
+  pinMode(BRIN1, OUTPUT);
+  pinMode(BRIN2, OUTPUT);
+  pinMode(BREnable, OUTPUT);
 
   Serial.begin(9600);
-  goal.beginCamera();
+  // goal.beginCamera();
+
+  
 
   // compassSensor.callibrate();
 }
@@ -88,11 +92,7 @@ void testingCompass() {
   Serial.println("Current offset is: " + String(compassSensor.currentOffset()));
 }
 
-void loop() {
-  if (switches.isCalibrateAngle()) {
-    compassSensor.zeroedAngle = compassSensor.getOrientation();
-  }
-
+void testingSensors() {
   testingballSensors();
   Serial.println("LINE SENSORS");
   Serial.println("-----------");
@@ -107,7 +107,48 @@ void loop() {
   Serial.println("-----------");
   Serial.println();
  
-  delay(500);
+}
+
+void testingMotors() {
+  FL.setSpeed(0.2);
+  delay(200);
+  FR.setSpeed(0.2);
+  delay(200);
+  BL.setSpeed(0.2);
+  delay(200);
+  BR.setSpeed(0.2);
+  delay(200);
+}
+
+void loop() {
+  if (switches.isCalibrateAngle()) {
+    compassSensor.zeroedAngle = compassSensor.getOrientation();
+  }
+
+  // digitalWrite(FLIN1, HIGH);
+  // digitalWrite(FLIN2, LOW);
+  // analogWrite(FLEnable, 200);
+
+  // digitalWrite(FRIN1, HIGH);
+  // digitalWrite(FRIN2, LOW);
+  // analogWrite(FREnable, 200);
+
+  // digitalWrite(BRIN1, HIGH);
+  // digitalWrite(BRIN2, LOW);
+  // analogWrite(BREnable, 200);
+
+  digitalWrite(BLIN1, HIGH);
+  digitalWrite(BLIN2, LOW);
+  analogWrite(BLEnable, 200);
+
+
+  // testingMotors();
+  // BL.setSpeed(0.7);
+  // movement.movement(0,0.2);
+
+  // delay(500);
+
+
 
 
   
