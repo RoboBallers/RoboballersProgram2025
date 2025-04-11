@@ -5,6 +5,10 @@ Goal::Goal() {
 
 }
 
+void Goal::score() {
+    digitalWrite(kickerPin, HIGH);
+}
+
 void Goal::beginCamera() {
     Serial2.begin(9600); 
 }

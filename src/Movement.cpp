@@ -4,71 +4,39 @@
 #include <math.h>
 
 
-Movement::Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor, CompassSensor& sensor)
+Movement::Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor)
     : FLMotor(FLMotor), FRMotor(FRMotor), BLMotor(BLMotor), BRMotor(BRMotor),
-      DirectionSensor(sensor), 
-      myPID(&Input, &Output, &Setpoint, kp, ki, kd, REVERSE)  
+      myPID(&Input, &Output, &Setpoint, this->kp, this->ki, this->kd, REVERSE)  
 {
     myPID.SetMode(AUTOMATIC); 
 }
 
+double Movement::findCorrection(double desiredOrientation) {
+  double correction = 0;
+  double orientationDiff = compassSensor.currentOffset() - desiredOrientation;
 
-double Movement::CorrectionAngle() {
-    double OffsetedOrientation;
-    double absValDiffOrientation = abs(DirectionSensor.zeroedAngle - DirectionSensor.getOrientation());
+  Input = abs(orientationDiff);
+  myPID.Compute();
 
-    if (absValDiffOrientation > 180) {
-      if (DirectionSensor.getOrientation() > DirectionSensor.zeroedAngle) {
-          OffsetedOrientation = 360 - absValDiffOrientation;
-      } else {
-          OffsetedOrientation = absValDiffOrientation - 360;
-      }
-    } else {
-      OffsetedOrientation = -(DirectionSensor.zeroedAngle - DirectionSensor.getOrientation());
-    }
+  if (orientationDiff > 90) {
+    correction = -1;
+  } else if (orientationDiff < -90) {
+    correction = 1;
+  } else if (orientationDiff > 0) {
+    correction = -1 * (Output / 100);
+  } else if (orientationDiff < 0) {
+    correction = (Output / 100);
+  }
 
-    return OffsetedOrientation;
+  return correction;
 }
 
-double Movement::findCorrection(double orientationVal) {
-    double correction = 1;
-    Input = abs(orientationVal);
-    myPID.Compute();
-
-    if (orientationVal > 0)
-    {
-        correction = -1 * (Output / 100);
-    }
-    else
-    {
-        correction = (Output / 100);
-    }
-
-    if (orientationVal > -5 && orientationVal < 0)
-    {
-        correction = 0;
-    }
-    else if (orientationVal < 5 && orientationVal > 0)
-    {
-        correction = 0;
-    }
-    else if (orientationVal > 110)
-    {
-        correction = -1;
-    }
-    else if (orientationVal < -110)
-    {
-        correction = 1;
-    }
-
-    return correction;
-}
 // Need to add orientation to the movement function
-void Movement::movement(double intended_angle, double speedfactor) {
-    double powerFR = Trig::Sin(intended_angle - 53);
-    double powerRR = Trig::Sin(intended_angle - 127);
-    double powerRL = Trig::Sin(intended_angle - 233);
-    double powerFL = Trig::Sin(intended_angle - 307);
+void Movement::movement(double intended_movement_angle, double speedfactor, double desiredOrientation) {
+    double powerFR = Trig::Sin(intended_movement_angle - 53);
+    double powerRR = Trig::Sin(intended_movement_angle - 127);
+    double powerRL = Trig::Sin(intended_movement_angle - 233);
+    double powerFL = Trig::Sin(intended_movement_angle - 307);
 
     max_power = fmax(fmax(abs(powerFR), abs(powerFL)), fmax(abs(powerRR), abs(powerRL)));
 
@@ -77,24 +45,53 @@ void Movement::movement(double intended_angle, double speedfactor) {
     powerRR = powerRR / max_power;
     powerRL = powerRL / max_power;
 
-    double correctionAngle = CorrectionAngle();
-    double correction = findCorrection(correctionAngle);
+    // double correction = findCorrection(desiredOrientation);
 
-    powerFR += correction;
-    powerFL += correction;
-    powerRR += correction;
-    powerRL += correction;
+    // powerFR += correction;
+    // powerFL += correction;
+    // powerRR += correction;
+    // powerRL += correction;
 
-    max_power = fmax(fmax(abs(powerFR), abs(powerFL)), fmax(abs(powerRR), abs(powerRL)));
+    // max_power = fmax(fmax(abs(powerFR), abs(powerFL)), fmax(abs(powerRR), abs(powerRL)));
 
-    powerFR = powerFR / max_power;
-    powerFL = powerFL / max_power;
-    powerRR = powerRR / max_power;
-    powerRL = powerRL / max_power;
+    // powerFR = powerFR / max_power;
+    // powerFL = powerFL / max_power;
+    // powerRR = powerRR / max_power;
+    // powerRL = powerRL / max_power;
+
+    // Serial.println(speedfactor * powerFL);
+    // Serial.println(speedfactor * powerFR);
+    // Serial.println(speedfactor * powerRL);
+    // Serial.println(speedfactor * powerRR);
+
+    // if (powerFL > 1) {
+    //   powerFL = 1;
+    // } else if (powerFL < -1) {
+    //   powerFL = -1;
+    // }
+
+    // if (powerFR > 1) {
+    //   powerFR = 1;
+    // } else if (powerFR < -1) {
+    //   powerFR = -1;
+    // }
+
+    // if (powerRL > 1) {
+    //   powerRL = 1;
+    // } else if (powerRL < -1) {
+    //   powerRL = -1;
+    // }
+
+    // if (powerRR > 1) {
+    //   powerRR = 1;
+    // } else if (powerRR < -1) {
+    //   powerRR = -1;
+    // }
+
 
     this->FLMotor.setSpeed(speedfactor * powerFL);
-    this->FRMotor.setSpeed(speedfactor * powerFR);
+    this->FRMotor.setSpeed(-speedfactor * powerFR);
+    Serial.println((speedfactor+0.4) * powerRL);
     this->BLMotor.setSpeed(speedfactor * powerRL);
-    this->BRMotor.setSpeed(speedfactor * powerRR);
-
+    this->BRMotor.setSpeed(-speedfactor * powerRR);
 }

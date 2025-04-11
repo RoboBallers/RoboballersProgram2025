@@ -12,7 +12,7 @@ private:
     Motor BLMotor;
     Motor BRMotor;
 
-    CompassSensor& DirectionSensor;
+    CompassSensor compassSensor;
     PID myPID;
 
     double max_power; 
@@ -23,9 +23,9 @@ private:
     double kd = 0.001;
 
 public:
-    Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor, CompassSensor& sensor);
-    void movement(double degrees, double speed_factor);
-    double findCorrection(double orientationOffsetFix);
+    Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor);
+    void movement(double intended_movement_angle, double speedfactor, double desiredOrientation);
+    double findCorrection(double desiredOrientation);
     double CorrectionAngle();
     
 

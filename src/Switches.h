@@ -8,9 +8,10 @@ class Switches {
     // bool isStart();
     bool isCalibrateAngle();
     bool isCalibrateLine();
+    bool isStart();
 
     private:
-    int startPin = -1;
+    int startPin = 27;
     int bluePin = -1;
     int calibrateAnglePin = 29;
 };

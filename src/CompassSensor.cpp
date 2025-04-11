@@ -30,6 +30,7 @@ int CompassSensor::getOrientation() {
     return event.orientation.x;
 }
 
+// range between -180 and 180
 int CompassSensor::currentOffset() {
   int currentOrientation = getOrientation();
   int offset = currentOrientation - zeroedAngle;

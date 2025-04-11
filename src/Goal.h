@@ -10,6 +10,7 @@ class Goal {
         void beginCamera();
         void requestColor(char c);
     private:
+        int kickerPin = 26;
   
 
         

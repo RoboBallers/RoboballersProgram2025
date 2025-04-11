@@ -11,3 +11,7 @@ bool Switches::isBlue() {
 bool Switches::isCalibrateAngle() {
     return digitalRead(calibrateAnglePin) == HIGH;
 }
+
+bool Switches::isStart() {
+    return digitalRead(startPin) == HIGH;
+}

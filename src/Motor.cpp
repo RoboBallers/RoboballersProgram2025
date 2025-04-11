@@ -9,8 +9,9 @@ Motor::Motor(int in1, int in2, int pwm) {
     this->speed = 0;
 }
 
-void Motor::setSpeed(int speed) {
-    this->speed = abs(speed);
+void Motor::setSpeed(double speed) {
+    // this->speed = constrain(abs(speed), 0, 255);
+
 
     if (speed > 0) {
         digitalWrite(this->in1, HIGH);
@@ -23,7 +24,8 @@ void Motor::setSpeed(int speed) {
         digitalWrite(this->in2, LOW);
     }
 
-    analogWrite(this->pwmPin, 255*speed);
+    Serial.println(255 * speed);
+    analogWrite(this->pwmPin, 255* abs(speed));
 }
 
 void Motor::stop() {
