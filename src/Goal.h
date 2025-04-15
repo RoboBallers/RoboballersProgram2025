@@ -3,14 +3,17 @@
 
 class Goal {
     public:
-        Goal();
+        Goal(CompassSensor& CompassSensor);
         double retrieveAngle();
         double AngleToMovetoGoal();
         void score();
         void beginCamera();
-        void requestColor(char c);
+        void sendColor(char c);
+        bool haveBall();
     private:
+        CompassSensor& compassSensor;
         int kickerPin = 26;
+        int lightGate = 10;
   
 
         

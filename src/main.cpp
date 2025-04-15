@@ -6,6 +6,7 @@
 #include <BallFinding.h>
 #include <Switches.h>
 #include <Goal.h>
+#include <Calibration.h>
 
 const int FLIN1 = 2;
 const int FLIN2 = 3;
@@ -26,16 +27,6 @@ const int BLEnable = 23;
 const int kicker = 26;
 
 double OffsetedOrientation = 0;
-int countCalibrate = 0;
-
-
-
-BallFinding ballFinding;
-// CompassSensor compassSensor;
-Switches switches;
-LineDetection linedetection;
-Goal goal;
-
 
 Motor FL(FLIN1, FLIN2, FLEnable);
 Motor FR(FRIN1, FRIN2, FREnable);
@@ -43,13 +34,14 @@ Motor BL(BLIN1, BLIN2, BLEnable);
 Motor BR(BRIN1, BRIN2, BREnable);
 
 Movement movement(FL, FR, BL, BR);
-// LineDetection line;
-// BallFinding ballFinding;
+LineDetection line;
+BallFinding ballFinding;
+Calibration callibration(line, compassSensor, movement);
+CompassSensor compassSensor;
+Switches switches;
+Goal goal;
 
 void setup() {
-  // put your setup code here, to run once:
-
-
   pinMode(FLIN1, OUTPUT);
   pinMode(FLIN2, OUTPUT);
   pinMode(FLEnable, OUTPUT);
@@ -69,9 +61,9 @@ void setup() {
   pinMode(kicker, OUTPUT);
 
   Serial.begin(9600);
-  // goal.beginCamera();
 
   
+  // goal.beginCamera();
 
   // compassSensor.callibrate();
 }
@@ -85,15 +77,15 @@ void testingballSensors() {
 }
 
 void testingLineSensors() {
-  linedetection.getSensorValues();
+  line.getSensorValues();
   for (int i = 0; i < 24; i++) {
-    Serial.println("Sensor " + String(i) + String(" ") + String(linedetection.vals[i]));
+    Serial.println("Sensor " + String(i) + String(" ") + String(line.vals[i]));
   }
 }
 
 void testingCompass() {
-  // Serial.println("Current Desired Angle is " + String(compassSensor.zeroedAngle));
-  // Serial.println("Current offset is: " + String(compassSensor.currentOffset()));
+  Serial.println("Current Desired Angle is " + String(compassSensor.zeroedAngle));
+  Serial.println("Current offset is: " + String(compassSensor.currentOffset()));
 }
 
 void testingSensors() {
@@ -114,91 +106,68 @@ void testingSensors() {
 }
 
 void testingMotors() {
-  FL.setSpeed(-100);
+  FL.setSpeed(-0.4);
   delay(200);
-  FR.setSpeed(-100);
+  FR.setSpeed(-0.4);
   delay(200);
-  BL.setSpeed(-100);
+  BL.setSpeed(-0.4);
   delay(200);
-  BR.setSpeed(-100);
+  BR.setSpeed(-0.4);
   delay(200);
 }
 
 void testingMotors2() {
-  // digitalWrite(FLIN1, HIGH);
-  // digitalWrite(FLIN2, LOW);
-  // analogWrite(FLEnable, 100);
+  digitalWrite(FLIN1, HIGH);
+  digitalWrite(FLIN2, LOW);
+  analogWrite(FLEnable, 100);
 
-  // digitalWrite(FRIN1, HIGH);
-  // digitalWrite(FRIN2, LOW);
-  // analogWrite(FREnable, 100);
+  digitalWrite(FRIN1, HIGH);
+  digitalWrite(FRIN2, LOW);
+  analogWrite(FREnable, 100);
 
-  // digitalWrite(BRIN1, HIGH);
-  // digitalWrite(BRIN2, LOW);
-  // analogWrite(BREnable, 100);
+  digitalWrite(BRIN1, HIGH);
+  digitalWrite(BRIN2, LOW);
+  analogWrite(BREnable, 100);
 
-  // digitalWrite(BLIN1, HIGH);
-  // digitalWrite(BLIN2, LOW);
-  // analogWrite(BLEnable, 150);
+  digitalWrite(BLIN1, HIGH);
+  digitalWrite(BLIN2, LOW);
+  analogWrite(BLEnable, 150);
 }
 
 void loop() {
-  // if (switches.isCalibrateAngle()) {
-  //   compassSensor.zeroedAngle = compassSensor.getOrientation();
-  // }
+  // If the compass calibration switch is on
+      // current heading will be considered zero
+  // otherwise if line calibration switch is on
+      // line sensor white color calibration will be constantly updated with robot spinning
 
-  // if (switches.isStart()) {
-      // movement.movement(90, 0.3, 0);
+  if (switches.isCalibrateAngle()) {
+    callibration.calibrateCompassSensor();
+  } else if (switches.isCalibrateLine()) {
+    callibration.calibrateLineSensors();
+  } else {
 
-      // delay(200);
-  // movement.movement(ballFinding.orbit(), 0.25, 0);
+//  If the match start switch is on, robot will move, else it won't move
 
-      
-  // } else {
-  //   Serial.println("Swithc is off");
-  //   movement.movement(0,0,0);
-  // }
-  testingballSensors();
-  delay(500);
+/*
+  if (switches.isStart()) {
+    // put whatever code to only move when start switch is toggled on
+  } else {
+    Serial.println("Switch is off");
+    movement.movement(0,0,0);
+  }
+*/
 
-
-// orbit
-  movement.movement(ballFinding.orbit(ballFinding.ballAngle()),0.4,0);
-  // Serial.println(ballFinding.ballAngle());
-  // delay(200);
-  // Serial.println();
-  // Serial.println(ballFinding.orbit());
-  // delay(200);
-
-  // BL.setSpeed(-0.4);
-  // BR.setSpeed(-0.4);
-  // FR.setSpeed(-0.4);
-  // FL.setSpeed(-0.4);
-  // BL.setSpeed(1);
-  // delay(200);
-  // BL.setSpeed(-1);
-  // delay(200);
+  // orbit
+  movement.movement(ballFinding.orbit(ballFinding.ballAngle()), 0.4, 0);
   
-  // testingMotors2();
-
-  // testingMotors();
-
-
-
-  // testingMotors();
-  // BL.setSpeed(0.7);
-
-  // delay(500);
-
-
-
-
-  
-  // if (line.lineDetected) {
-    // move.movement(line.Output(), 1);
-  // } else {
-  //   move.movement(ballFinding.orbit(), 1);
-  // }
- 
+  // if line is detected, then move at calculated angle, otherwise regular orbit
+  /*
+   if (line.lineDetected) {
+    movement.movement(line.Output(), 0.2, 0);
+  } else {
+    movement.movement(ballFinding.orbit(ballFinding.ballAngle()), 0.4, 0);
+  }
+  */
+  }
 }
 

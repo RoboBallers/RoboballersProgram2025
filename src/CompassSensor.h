@@ -2,9 +2,7 @@
 #define COMPASSSENSOR_H
 
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
-#include <utility/imumaths.h>
 
 class CompassSensor {
     public:
@@ -12,6 +10,7 @@ class CompassSensor {
     void callibrate();
     int getOrientation();
     int currentOffset();
+    int currentOffset(double goalAngle);
     double zeroedAngle;
 
     private:

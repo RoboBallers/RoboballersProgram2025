@@ -3,11 +3,14 @@
 
 class Calibration {
     public:
-        Calibration();
-        void calibrate(); 
-        int calibrateVal[48];
+        Calibration(LineDetection& lineDetection, CompassSensor& compassSensor, Movement& movement);
+        void calibrateLineSensors(); 
+        void calibrateCompassSensor();
+        int calibrateVal[24];
     private:
-        // LineDetection *lineDetection;
+        LineDetection& lineDetection;
+        CompassSensor& compassSensor;
+        Movement& movement;
 
 };
 

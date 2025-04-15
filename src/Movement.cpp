@@ -95,3 +95,10 @@ void Movement::movement(double intended_movement_angle, double speedfactor, doub
     this->BLMotor.setSpeed(speedfactor * powerRL);
     this->BRMotor.setSpeed(-speedfactor * powerRR);
 }
+
+void Movement::circle() {
+    this->FLMotor.setSpeed(0.2);
+    this->FRMotor.setSpeed(0.2);
+    this->BLMotor.setSpeed(0.2);
+    this->BRMotor.setSpeed(0.2);
+}

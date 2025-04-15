@@ -1,20 +1,37 @@
 #include <Goal.h>
 #include <Arduino.h>
+#include <CompassSensor.h>
 
-Goal::Goal() {
+Goal::Goal(CompassSensor& compassSensor) : compassSensor(compassSensor) {
 
 }
 
 void Goal::score() {
-    digitalWrite(kickerPin, HIGH);
+    if (haveBall() && compassSensor.currentOffset(retrieveAngle())) {
+        digitalWrite(kickerPin, HIGH);
+    }
 }
 
 void Goal::beginCamera() {
     Serial2.begin(9600); 
 }
 
-void Goal::requestColor(char color) {
+void Goal::sendColor(char color) {
     Serial2.write(color);
+}
+
+bool Goal::haveBall() {
+    Serial.println("Have Ball Diode reading value: " + String(analogRead(lightGate)));
+    // 700 needs to be tuned, not sure if it will work
+    if (analogRead(lightGate) < 700)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+
 }
 
 

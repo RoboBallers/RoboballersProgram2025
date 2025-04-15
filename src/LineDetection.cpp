@@ -2,8 +2,7 @@
 #include <trig.h>
 #include <tuple>
 
-LineDetection::LineDetection() {
-    // uint8_t csPin, uint8_t mosiPin, uint8_t misoPin, uint8_t sckPin
+LineDetection::LineDetection(Calibration& calibration) : calibration(calibration) {
     lineDetected = false;
     sensorAngle = 0;
     adc1.begin(cs1,mosi,miso,sck);
@@ -12,6 +11,9 @@ LineDetection::LineDetection() {
 
     // Assuming that sensor 1 on adc 1 is at the front and center of the robot
     for (int i = 0; i < 24; i++) {
+        // sensorAngles = [0,15,30,45,60] - think of this as relative to how our robot moves when we put this angle in to movement function
+        // if say adc 3 last sensor is front and center, then sensorAngle[0] should be 345, sensorAngle[1] should be 0 and so on - you can gpt a loop for this or something if this issue occurs 
+        // this is all assuming that adc 1,2,3 are directly in order with there being 8 sensors of adc1, then right after (clockwise) all sensors of adc 2 and so on - if not just call Prem or figure it out by looking at ballAngle() method in BallFinding.cpp
         sensorAngles[i] = i * 15;
         // sinValues[i] = sin(sensorAngles[i]);
         cosValues[i] = Trig::Cos(sensorAngles[i]);
@@ -56,9 +58,9 @@ void LineDetection::getSensorValues() {
 }
 
 
-void LineDetection::getIntersectionAngle(int* calibrateVal, int* sensorVals) {
+void LineDetection::getIntersectionAngle(int* sensorVals) {
     for (int i = 0; i < 24; i++) {
-        if (sensorVals[i] > calibrateVal[i]) {
+        if (sensorVals[i] > calibration.calibrateVal[i]) {
             sensorVals[i] = 1;
             lineDetected = true;
         } else {
@@ -91,6 +93,8 @@ void LineDetection::getIntersectionAngle(int* calibrateVal, int* sensorVals) {
     theta1 = min(theta1, theta2);
     theta2 = max(temp, theta2);
 
+    // Serial.println("The greatest distance between the two sensors that see lines are: " + String(theta1) + " and " + String(theta2));
+
     if (theta2 - theta1 < 180) {
         intersectionAngle = Trig::avg(theta1, theta2);
         sensorAngle = theta2-theta1;
@@ -103,6 +107,10 @@ void LineDetection::getIntersectionAngle(int* calibrateVal, int* sensorVals) {
 
 double LineDetection::getChord() {
     // diam/maxdiam
+
+    // Maximum chord length is 2 meaning that half of the robot is on the other side of the line
+    // 2 means that the greatest distance between sensors that see the lines is 180 degrees
+    // Serial.println("Chord length detected: " + String(2 * Trig::Sin(sensorAngle/2)));
     return (2 * Trig::Sin(sensorAngle/2));
 }
 
@@ -110,10 +118,12 @@ double LineDetection::getChord() {
 
 double LineDetection::Output() {
     if (lineDetected) {
-        // getIntersectionAngle(cal->calibrateVal, getSensorValues());
+        getSensorValues();
+        getIntersectionAngle(vals);
         if (linefollow) {
-            if ((crossLine && (getChord() < chordThreshold)) ) {
-                if (getChord() < 1) {
+            double chord = getChord();
+            if ((crossLine && (chord < chordThreshold)) ) {
+                if (chord < 1) {
                     return -correctionValLineFollow;
                 } else {
                     return correctionValLineFollow;

@@ -27,6 +27,7 @@ public:
     void movement(double intended_movement_angle, double speedfactor, double desiredOrientation);
     double findCorrection(double desiredOrientation);
     double CorrectionAngle();
+    void circle();
     
 
 };

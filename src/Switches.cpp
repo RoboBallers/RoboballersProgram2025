@@ -15,3 +15,7 @@ bool Switches::isCalibrateAngle() {
 bool Switches::isStart() {
     return digitalRead(startPin) == HIGH;
 }
+
+bool Switches::isCalibrateLine() {
+    return digitalRead(calibrateLinePin) == HIGH;
+}

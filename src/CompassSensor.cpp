@@ -43,3 +43,17 @@ int CompassSensor::currentOffset() {
     return offset; 
   }
 }
+
+int CompassSensor::currentOffset(double goalAngle) {
+  int currentOrientation = getOrientation();
+  int offset = currentOrientation - (zeroedAngle + goalAngle);
+
+  if (offset < -180) {
+    return offset + 360; 
+  } else if (offset > 180) {
+    return offset - 360; 
+  } else {
+    return offset; 
+  }
+}
+
