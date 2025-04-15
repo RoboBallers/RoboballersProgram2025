@@ -58,9 +58,8 @@ double BallFinding::ballAngle() {
     return ballAngle;
 }
 
-double BallFinding::orbit() {
+double BallFinding::orbit(double ballAngle) {
     double orbit_val = 0;
-    double ballAngle = BallFinding::ballAngle();
 
      if (ballAngle>80 && ballAngle<280) {
         orbit_val = 180;

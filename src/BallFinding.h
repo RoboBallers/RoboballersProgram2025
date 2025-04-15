@@ -7,7 +7,7 @@ class BallFinding {
     public:
     BallFinding();
     double ballAngle();
-    double orbit();
+    double orbit(double ballAngle);
     int sensorVals[24];
 
 
