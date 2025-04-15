@@ -160,6 +160,10 @@ void loop() {
   // }
   testingballSensors();
   delay(500);
+
+
+// orbit
+  movement.movement(ballFinding.orbit(ballFinding.ballAngle()),0.4,0);
   // Serial.println(ballFinding.ballAngle());
   // delay(200);
   // Serial.println();
