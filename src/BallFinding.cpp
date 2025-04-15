@@ -29,17 +29,17 @@ double BallFinding::ballAngle() {
 
     }
 
-    // for (int i = 0; i < 24; i++) {
-    //     if (sensorVals[i] > 1020 || sensorVals[i] < 5) {
-    //         if (i == 0) {
-    //             sensorVals[i] = sensorVals[i+1];
-    //         } else if (i == 23) {
-    //             sensorVals[i] = sensorVals[i-1];
-    //         } else {
-    //         sensorVals[i] = (sensorVals[i+1] + sensorVals[i-1]) / 2;
-    //     }
-    //     }
-    // }
+    for (int i = 0; i < 24; i++) {
+        if (sensorVals[i] > 1020 || sensorVals[i] < 5) {
+            if (i == 0) {
+                sensorVals[i] = sensorVals[i+1];
+            } else if (i == 23) {
+                sensorVals[i] = sensorVals[i-1];
+            } else {
+            sensorVals[i] = (sensorVals[i+1] + sensorVals[i-1]) / 2;
+        }
+        }
+    }
 
     // Front and Center is on the side of the main switch and battery
     for (int i = 0; i < 24; i++) {
@@ -70,7 +70,7 @@ double BallFinding::orbit() {
     }
 
     // if ball is right in front of the robot
-    else if (355 < orbit_val && orbit_val < 5) {
+    else if (345< ballAngle && ballAngle < 15) {
         orbit_val = 0;
     }
     // if the ball is in the second quadrant

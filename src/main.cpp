@@ -148,18 +148,23 @@ void loop() {
   // }
 
   // if (switches.isStart()) {
-      movement.movement(180, 0.3, 0);
+      // movement.movement(90, 0.3, 0);
 
       // delay(200);
-  //     // movement.movement(ballFinding.orbit(), 0.25, 0);
+  // movement.movement(ballFinding.orbit(), 0.25, 0);
 
       
   // } else {
   //   Serial.println("Swithc is off");
   //   movement.movement(0,0,0);
   // }
-
+  testingballSensors();
+  delay(500);
+  // Serial.println(ballFinding.ballAngle());
+  // delay(200);
   // Serial.println();
+  // Serial.println(ballFinding.orbit());
+  // delay(200);
 
   // BL.setSpeed(-0.4);
   // BR.setSpeed(-0.4);
