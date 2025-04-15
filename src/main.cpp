@@ -163,8 +163,11 @@ void loop() {
   // if line is detected, then move at calculated angle, otherwise regular orbit
   /*
    if (line.lineDetected) {
+    Serial.println("Line Detected");
+    Serial.println("Angle to move at: " + String(line.Output()));
     movement.movement(line.Output(), 0.2, 0);
   } else {
+    Serial.println("Line Not Detected");
     movement.movement(ballFinding.orbit(ballFinding.ballAngle()), 0.4, 0);
   }
   */
