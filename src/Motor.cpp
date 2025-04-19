@@ -24,7 +24,6 @@ void Motor::setSpeed(double speed) {
         digitalWrite(this->in2, LOW);
     }
 
-    Serial.println(255 * speed);
     analogWrite(this->pwmPin, 255* abs(speed));
 }
 

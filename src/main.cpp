@@ -34,12 +34,13 @@ Motor BL(BLIN1, BLIN2, BLEnable);
 Motor BR(BRIN1, BRIN2, BREnable);
 
 Movement movement(FL, FR, BL, BR);
-LineDetection line;
-BallFinding ballFinding;
-Calibration callibration(line, compassSensor, movement);
 CompassSensor compassSensor;
+LineDetection line;
+Calibration calibration(line, compassSensor);
+BallFinding ballFinding;
 Switches switches;
-Goal goal;
+Goal goal(compassSensor);
+
 
 void setup() {
   pinMode(FLIN1, OUTPUT);
@@ -62,10 +63,7 @@ void setup() {
 
   Serial.begin(9600);
 
-  
-  // goal.beginCamera();
-
-  // compassSensor.callibrate();
+  compassSensor.callibrate();
 }
 
 void testingballSensors() {
@@ -135,17 +133,36 @@ void testingMotors2() {
 }
 
 void loop() {
+
+  if(switches.isStart()) {
+    Serial.println("Start switch is on");
+    Serial.println("Compass Angle: " + String(compassSensor.getOrientation()));
+    Serial.println("Compass Zeroed Angle:" + String(compassSensor.zeroedAngle));
+    Serial.println();
+
+
+    movement.movement(90,0.35,0);
+  } else {
+    calibration.calibrateCompassSensor();
+    movement.movement(0, 0, 0);
+    if (switches.isCalibrateLine()) {
+      Serial.println("Callibrating Line sensors");
+      calibration.calibrateLineSensors();
+    }
+  }
+
+
   // If the compass calibration switch is on
       // current heading will be considered zero
   // otherwise if line calibration switch is on
       // line sensor white color calibration will be constantly updated with robot spinning
 
-  if (switches.isCalibrateAngle()) {
-    callibration.calibrateCompassSensor();
-  } else if (switches.isCalibrateLine()) {
-    callibration.calibrateLineSensors();
-  } else {
-
+  // if (switches.isCalibrateAngle()) {
+  //   calibration.calibrateCompassSensor();
+  // } else if (switches.isCalibrateLine()) {
+    // calibration.calibrateLineSensors();
+  // } else {
+  //   movement.movement(90, 0.35, 0);
 //  If the match start switch is on, robot will move, else it won't move
 
 /*
@@ -158,7 +175,21 @@ void loop() {
 */
 
   // orbit
-  movement.movement(ballFinding.orbit(ballFinding.ballAngle()), 0.4, 0);
+
+              // Serial.println("Ball Angle: " + String(ballFinding.ballAngle()));
+              // Serial.println("Orbit Angle: " + String(ballFinding.orbit(ballFinding.ballAngle())));
+              // Serial.println();
+              // delay(500);
+
+              // testingballSensors();
+              // delay(500);
+
+  // Serial.println(ballFinding.orbit(ballFinding.ballAngle()));
+  // movement.movement(ballFinding.orbit(ballFinding.ballAngle()), 0.4, 0);
+
+
+  // kicker testing
+  // goal.score();
   
   // if line is detected, then move at calculated angle, otherwise regular orbit
   /*
@@ -171,6 +202,8 @@ void loop() {
     movement.movement(ballFinding.orbit(ballFinding.ballAngle()), 0.4, 0);
   }
   */
-  }
+  // }
+
+
 }
 

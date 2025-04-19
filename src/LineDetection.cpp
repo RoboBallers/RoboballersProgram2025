@@ -1,8 +1,7 @@
 #include <LineDetection.h>
 #include <trig.h>
-#include <tuple>
 
-LineDetection::LineDetection(Calibration& calibration) : calibration(calibration) {
+LineDetection::LineDetection() {
     lineDetected = false;
     sensorAngle = 0;
     adc1.begin(cs1,mosi,miso,sck);
@@ -60,7 +59,7 @@ void LineDetection::getSensorValues() {
 
 void LineDetection::getIntersectionAngle(int* sensorVals) {
     for (int i = 0; i < 24; i++) {
-        if (sensorVals[i] > calibration.calibrateVal[i]) {
+        if (sensorVals[i] >  calibrateVals[i]) {
             sensorVals[i] = 1;
             lineDetected = true;
         } else {
@@ -91,7 +90,7 @@ void LineDetection::getIntersectionAngle(int* sensorVals) {
     
     int temp = theta1;
     theta1 = min(theta1, theta2);
-    theta2 = max(temp, theta2);
+
 
     // Serial.println("The greatest distance between the two sensors that see lines are: " + String(theta1) + " and " + String(theta2));
 

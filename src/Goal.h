@@ -1,5 +1,7 @@
 #ifndef GOAL_H
 #define GOAL_H
+#include <elapsedMillis.h>
+#include <CompassSensor.h>
 
 class Goal {
     public:
@@ -14,9 +16,12 @@ class Goal {
         CompassSensor& compassSensor;
         int kickerPin = 26;
         int lightGate = 10;
+        elapsedMillis timer;
+        elapsedMillis active;
+        int kickHold = 1000;
   
 
         
 };
 
-#endif GOAL_H
+#endif // GOAL_H

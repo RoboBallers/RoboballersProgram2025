@@ -13,6 +13,7 @@ Movement::Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMoto
 
 double Movement::findCorrection(double desiredOrientation) {
   double correction = 0;
+  // - desiredOrientation or positive (doesn't really matter anymore because no goalAngle)
   double orientationDiff = compassSensor.currentOffset() - desiredOrientation;
 
   Input = abs(orientationDiff);
@@ -45,53 +46,52 @@ void Movement::movement(double intended_movement_angle, double speedfactor, doub
     powerRR = powerRR / max_power;
     powerRL = powerRL / max_power;
 
-    // double correction = findCorrection(desiredOrientation);
+    double correction = findCorrection(desiredOrientation);
 
-    // powerFR += correction;
-    // powerFL += correction;
-    // powerRR += correction;
-    // powerRL += correction;
+    powerFR += correction;
+    powerFL += correction;
+    powerRR += correction;
+    powerRL += correction;
 
-    // max_power = fmax(fmax(abs(powerFR), abs(powerFL)), fmax(abs(powerRR), abs(powerRL)));
+    max_power = fmax(fmax(abs(powerFR), abs(powerFL)), fmax(abs(powerRR), abs(powerRL)));
 
-    // powerFR = powerFR / max_power;
-    // powerFL = powerFL / max_power;
-    // powerRR = powerRR / max_power;
-    // powerRL = powerRL / max_power;
+    powerFR = powerFR / max_power;
+    powerFL = powerFL / max_power;
+    powerRR = powerRR / max_power;
+    powerRL = powerRL / max_power;
 
     // Serial.println(speedfactor * powerFL);
     // Serial.println(speedfactor * powerFR);
     // Serial.println(speedfactor * powerRL);
     // Serial.println(speedfactor * powerRR);
 
-    // if (powerFL > 1) {
-    //   powerFL = 1;
-    // } else if (powerFL < -1) {
-    //   powerFL = -1;
-    // }
+    if (powerFL > 1) {
+      powerFL = 1;
+    } else if (powerFL < -1) {
+      powerFL = -1;
+    }
 
-    // if (powerFR > 1) {
-    //   powerFR = 1;
-    // } else if (powerFR < -1) {
-    //   powerFR = -1;
-    // }
+    if (powerFR > 1) {
+      powerFR = 1;
+    } else if (powerFR < -1) {
+      powerFR = -1;
+    }
 
-    // if (powerRL > 1) {
-    //   powerRL = 1;
-    // } else if (powerRL < -1) {
-    //   powerRL = -1;
-    // }
+    if (powerRL > 1) {
+      powerRL = 1;
+    } else if (powerRL < -1) {
+      powerRL = -1;
+    }
 
-    // if (powerRR > 1) {
-    //   powerRR = 1;
-    // } else if (powerRR < -1) {
-    //   powerRR = -1;
-    // }
+    if (powerRR > 1) {
+      powerRR = 1;
+    } else if (powerRR < -1) {
+      powerRR = -1;
+    }
 
 
     this->FLMotor.setSpeed(speedfactor * powerFL);
     this->FRMotor.setSpeed(-speedfactor * powerFR);
-    Serial.println((speedfactor+0.4) * powerRL);
     this->BLMotor.setSpeed(speedfactor * powerRL);
     this->BRMotor.setSpeed(-speedfactor * powerRR);
 }

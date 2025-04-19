@@ -6,7 +6,7 @@
 
 class LineDetection {
 public:
-    LineDetection(Calibration& calibration);
+    LineDetection();
     void getSensorValues();
     void getIntersectionAngle(int* sensorVals);
     double Output();
@@ -14,7 +14,8 @@ public:
     bool lineDetected;
     bool startLineFollow();
     int vals[24];
-
+    double intersectionAngle;
+    int calibrateVals[24];
 
 
 private:
@@ -22,7 +23,6 @@ private:
     MCP3008 adc2;
     MCP3008 adc3;
 
-    Calibration calibration;
 
     int sensorVals[24];
     double sinValues[24];
@@ -36,7 +36,6 @@ private:
     int mosi = 11;
     int miso = 12;
     bool crossLine;
-    double intersectionAngle;
     double initialAngle;
     double currentAngle;
     double angleDiff;

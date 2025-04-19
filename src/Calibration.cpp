@@ -4,19 +4,19 @@
 #include <CompassSensor.h>
 #include <Movement.h>
 
-Calibration::Calibration(LineDetection& lineDetection, CompassSensor& compassSensor, Movement& movement) 
-: lineDetection(lineDetection), compassSensor(compassSensor), movement(movement) {
+Calibration::Calibration(LineDetection& lineDetection, CompassSensor& compassSensor)
+    : lineDetection(lineDetection), compassSensor(compassSensor) {
 }
 
 
 void Calibration::calibrateLineSensors() {
     lineDetection.getSensorValues();
     for (int i = 0; i < 24; i++) {
-        calibrateVal[i] = fmax(calibrateVal[i],lineDetection.vals[i]+40);
+        lineDetection.calibrateVals[i] = fmax(lineDetection.calibrateVals[i],lineDetection.vals[i]+40);
     }
-    movement.circle();
 }
 
 void Calibration::calibrateCompassSensor() {
     compassSensor.zeroedAngle = compassSensor.getOrientation();
+    Serial.println("Zeroed Angle: " + String(compassSensor.zeroedAngle));
 }

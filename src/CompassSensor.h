@@ -8,8 +8,8 @@ class CompassSensor {
     public:
     CompassSensor();
     void callibrate();
-    int getOrientation();
     int currentOffset();
+    int getOrientation();
     int currentOffset(double goalAngle);
     double zeroedAngle;
 
