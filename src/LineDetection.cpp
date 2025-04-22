@@ -58,7 +58,7 @@ void LineDetection::getIntersectionAngle(int* inputVals) {
         if (vals[i] >  calibrateVals[i]) {
             lineDetectedVals[i] = 1;
             lineDetected = true;
-            Serial.println("Line has been detected");
+            // Serial.println("Line has been detected");
         } else {
             lineDetectedVals[i] = 0;
         }
@@ -136,11 +136,12 @@ double LineDetection::Output() {
 
     if (lineDetected) {
         double currChord = getChord();
-        // Serial.print("Chord length: ");
-        // Serial.println(chord);
+        Serial.print("Chord length: ");
+        Serial.println(currChord);
 
-        if (currChord >= chordThreshold  && abs(prevChord - currChord) < chordDifferenceThres) {
-            crossLine = !crossLine;
+        // if (currChord >= chordThreshold  && abs(prevChord - currChord) > chordDifferenceThres) {
+        if (currChord >= chordThreshold) {
+            crossLine = true;
         }
 
         if (crossLine) {
@@ -158,7 +159,6 @@ double LineDetection::Output() {
         lineDetected = false;
 
         prevChord = currChord;
-
     } else {
         crossLine = false;
         initialAngle = -1;
@@ -167,11 +167,12 @@ double LineDetection::Output() {
         // Serial.println("No line detected — state reset");
     }
 
-    //  if (crossLine) {
-    //     Serial.println("Crossline is TRUE");
-    // } else {
-    //     Serial.println("Crossline is FALSE");
-    // }
+     if (crossLine) {
+        Serial.println("Crossline is TRUE");
+    } else {
+        Serial.println("Crossline is FALSE");
+    }
+
 
     angleDiff = 0;
     return avoidanceAngle;

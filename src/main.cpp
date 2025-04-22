@@ -192,22 +192,19 @@ void loop() {
     } else {
       movement.stop();
     }
-    // Serial.println("Ball Angle: " + String(ballFinding.ballAngle()));
-    // Serial.println("Ball Orbit: " + String(ballFinding.orbit(ballFinding.ballAngle())));
-    // movement.movement(ballFinding.orbit(ballFinding.ballAngle()), 0.5);
-    // movement.movement(315,0.25);
+    Serial.println("Ball Angle: " + String(ballFinding.ballAngle()));
+    Serial.println("Ball Orbit: " + String(ballFinding.orbit(ballFinding.ballAngle())));
+    movement.movement(ballFinding.orbit(ballFinding.ballAngle()), 0.5);
 
-    // if (goal.haveBall()) {
-    //   goal.score();
-    // }
+    if (goal.haveBall()) {
+      goal.score();
+    }
 
-    // testingLineAngle();
-    // Serial.println("Chord length: " + String(line.getChord()));
     Serial.println(line.Output());
 
     line.lineDetected = false;
   } else {
-    // calibration.calibrateCompassSensor();
+    calibration.calibrateCompassSensor();
     movement.stop();
     if (switches.isCalibrateLine()) {
       Serial.println("Callibrating Line sensors");
@@ -219,6 +216,12 @@ void loop() {
   }
 
   goal.kickBackground();
+
+  line.crossLine = false;
+
+
+  // delay(300);
+
 
   // testingMotors();
 

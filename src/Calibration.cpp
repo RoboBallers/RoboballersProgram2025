@@ -1,7 +1,6 @@
 #include <Calibration.h>
 #include <math.h>
 #include <LineDetection.h>
-#include <CompassSensor.h>
 #include <Movement.h>
 
 Calibration::Calibration(LineDetection& lineDetection)
