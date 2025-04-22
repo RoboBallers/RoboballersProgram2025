@@ -7,13 +7,12 @@ class CompassSensor;  // Forward declaration
 
 class Calibration {
     public:
-        Calibration(LineDetection& lineDetection, CompassSensor& compassSensor);
+        Calibration(LineDetection& lineDetection);
         void calibrateLineSensors(); 
         void calibrateCompassSensor();
         int calibrateVal[24];
     private:
         LineDetection& lineDetection;
-        CompassSensor& compassSensor;
 };
 
 #endif // Calibration_H

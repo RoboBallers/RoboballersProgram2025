@@ -1,8 +1,7 @@
 #include <Goal.h>
 #include <Arduino.h>
-#include <CompassSensor.h>
 
-Goal::Goal(CompassSensor& compassSensor) : compassSensor(compassSensor) {
+Goal::Goal() {
 
 }
 

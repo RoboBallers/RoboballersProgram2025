@@ -2,7 +2,6 @@
 #include <Motor.h>
 #include <Movement.h>
 #include <LineDetection.h>
-#include <CompassSensor.h>
 #include <BallFinding.h>
 #include <Switches.h>
 #include <Goal.h>
@@ -34,13 +33,12 @@ Motor FR(FRIN1, FRIN2, FREnable);
 Motor BL(BLIN1, BLIN2, BLEnable);
 Motor BR(BRIN1, BRIN2, BREnable);
 
-CompassSensor compassSensor;
-Movement movement(FL, FR, BL, BR, compassSensor);
+Movement movement(FL, FR, BL, BR);
 LineDetection line;
-Calibration calibration(line, compassSensor);
+Calibration calibration(line);
 BallFinding ballFinding;
 Switches switches;
-Goal goal(compassSensor);
+Goal goal;
 
 elapsedMillis orbitTimeElapsed;
 
@@ -82,11 +80,6 @@ void testingLineSensors() {
   for (int i = 0; i < 24; i++) {
     Serial.println("Sensor " + String(i) + String(" ") + String(line.vals[i]));
   }
-}
-
-void testingCompass() {
-  Serial.println("Current Desired Angle is " + String(compassSensor.zeroedAngle));
-  Serial.println("Current offset is: " + String(compassSensor.currentOffset()));
 }
 
 void testingSensors() {

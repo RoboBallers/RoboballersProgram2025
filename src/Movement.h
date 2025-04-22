@@ -2,7 +2,6 @@
 #define MOVEMENT_H
 
 #include <Motor.h>
-#include <CompassSensor.h>
 #include <PID_v1.h>
 
 class Movement {
@@ -12,7 +11,6 @@ private:
     Motor BLMotor;
     Motor BRMotor;
 
-    CompassSensor& compassSensor;
     PID* myPID;
 
     double max_power; 
@@ -23,7 +21,7 @@ private:
     double kd = 0.001;
 
 public:
-    Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor, CompassSensor& compassSensor);
+    Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor);
     void movement(double intended_movement_angle, double speedfactor);
     double findCorrection();
     double CorrectionAngle();
