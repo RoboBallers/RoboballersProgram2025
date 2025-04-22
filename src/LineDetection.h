@@ -49,6 +49,7 @@ private:
     double anglebisc = -1;
     double prevChord = -1;
     double currChord = -1;
+    double chordDifferenceThres = 0.1;
 };
 
 #endif // LINEDETECTION_H

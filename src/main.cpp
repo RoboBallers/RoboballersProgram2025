@@ -227,6 +227,7 @@ void loop() {
 
   goal.kickBackground();
 
+  // testingMotors();
 
 //kickerWithOrbit();
 // testingLineSensors();
@@ -240,8 +241,6 @@ void loop() {
   // }
 
   // goal.prevGoalDiode = goal.currGoalDiode;
-  
-  
 }
 
 /*

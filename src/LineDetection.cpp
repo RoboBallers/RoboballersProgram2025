@@ -130,58 +130,6 @@ void LineDetection::sensorsDetectedLine() {
     }
 }
 
-
-// double LineDetection::Output() {
-//     getSensorValues();
-//     getIntersectionAngle(vals);
-//     if (lineDetected) {
-//         // Serial.println("Line Detected");
-
-//         // if (linefollow) {
-//         //     double chord = getChord();
-//         //     if ((crossLine && (chord < chordThreshold)) ) {
-//         //         if (chord < 1) {
-//         //             return -correctionValLineFollow;
-//         //         } else {
-//         //             return correctionValLineFollow;
-//         //         }
-//         //     }
-//         // } 
-//         // else {
-//             if (initialAngle == -1) {
-//                 initialAngle = intersectionAngle;
-//             }
-//             currentAngle = intersectionAngle;
-//             angleDiff = abs(currentAngle - initialAngle);
-//             initialAngle = currentAngle;
-//             if (angleDiff > 180) {
-//                 angleDiff = 360 - angleDiff;
-//             }
-//             if (angleDiff > 100 && !crossLine) {
-//                 crossLine = true;
-//                 angleDiff = 0;
-//             }
-//             if (crossLine) {
-//                 intersectionAngle += 180;
-//                 if (intersectionAngle > 360) {
-//                     intersectionAngle -= 360;
-//                 }
-//                 if (angleDiff > 100) {
-//                     crossLine = false;
-//                 }
-//             }
-//         lineDetected = false;
-//         // }
-//     } else {
-//         crossLine = false;
-//         initialAngle = -1;
-//         intersectionAngle = -1;
-//     }
-
-//     angleDiff = 0;
-//     return intersectionAngle;
-// }
-
 double LineDetection::Output() {
     getSensorValues();
     getIntersectionAngle(vals);
@@ -191,7 +139,7 @@ double LineDetection::Output() {
         // Serial.print("Chord length: ");
         // Serial.println(chord);
 
-        if (currChord >= chordThreshold) {
+        if (currChord >= chordThreshold  && abs(prevChord - currChord) < chordDifferenceThres) {
             crossLine = !crossLine;
         }
 
