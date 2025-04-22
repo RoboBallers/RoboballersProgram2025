@@ -12,11 +12,12 @@ Calibration::Calibration(LineDetection& lineDetection, CompassSensor& compassSen
 void Calibration::calibrateLineSensors() {
     lineDetection.getSensorValues();
     for (int i = 0; i < 24; i++) {
-        lineDetection.calibrateVals[i] = fmax(lineDetection.calibrateVals[i],lineDetection.vals[i]+40);
+        lineDetection.calibrateVals[i] = fmax(lineDetection.calibrateVals[i],lineDetection.vals[i] * 1.5);
     }
 }
 
 void Calibration::calibrateCompassSensor() {
     compassSensor.zeroedAngle = compassSensor.getOrientation();
     Serial.println("Zeroed Angle: " + String(compassSensor.zeroedAngle));
+    Serial.println();
 }

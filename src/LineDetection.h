@@ -16,6 +16,9 @@ public:
     int vals[24];
     double intersectionAngle;
     int calibrateVals[24];
+    int lineDetectedVals[24];
+    void sensorsDetectedLine();
+
 
 
 private:
@@ -41,7 +44,11 @@ private:
     double angleDiff;
     bool linefollow;
     double correctionValLineFollow;
-    double chordThreshold = 0.85;
+    double chordThreshold = 1.95; // change to 1.85?
+    int avoidanceAngle = -1;
+    double anglebisc = -1;
+    double prevChord = -1;
+    double currChord = -1;
 };
 
 #endif // LINEDETECTION_H

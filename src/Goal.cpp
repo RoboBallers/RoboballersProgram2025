@@ -6,23 +6,30 @@ Goal::Goal(CompassSensor& compassSensor) : compassSensor(compassSensor) {
 
 }
 
-// void Goal::score() {
+void Goal::score() {
 
-//     if (timer > (kickHold + 2000))
-//     {
-//         timer = 0;
-//     }
-//     // if (timer <= kickHold && haveBall())
-//     if (timer <= kickHold)
-//     {
-//         digitalWrite(kickerPin, HIGH);
-//     }
-//     else
-//     {
-//         digitalWrite(kickerPin, LOW);
-//     }
-//     active = 0;
-// }
+    if (timer > (kickHold + 2000))
+    {
+        timer = 0;
+    }
+    // if (timer <= kickHold && haveBall())
+    if (timer <= kickHold)
+    {
+        digitalWrite(kickerPin, HIGH);
+    }
+    else
+    {
+        digitalWrite(kickerPin, LOW);
+    }
+    active = 0;
+}
+
+void Goal::kickBackground() {
+    if (active > 2 && timer > kickHold)
+    {
+        digitalWrite(kickerPin, LOW);
+    }
+}
 
 void Goal::beginCamera() {
     Serial2.begin(9600); 
@@ -34,15 +41,12 @@ void Goal::sendColor(char color) {
 
 bool Goal::haveBall() {
     Serial.println("Have Ball Diode reading value: " + String(analogRead(lightGate)));
-    // 700 needs to be tuned, not sure if it will work
-    if (analogRead(lightGate) < 700)
-    {
-        return false;
-    }
-    else
+    
+    if (abs(currGoalDiode - prevGoalDiode) > 40)
     {
         return true;
     }
+    return false;
 
 }
 

@@ -1,23 +1,21 @@
 #include <Movement.h>
 #include <math.h>
 #include <trig.h>
-#include <math.h>
 
 
-Movement::Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor)
-    : FLMotor(FLMotor), FRMotor(FRMotor), BLMotor(BLMotor), BRMotor(BRMotor),
-      myPID(&Input, &Output, &Setpoint, this->kp, this->ki, this->kd, REVERSE)  
+Movement::Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor, CompassSensor& compassSensor)
+    : FLMotor(FLMotor), FRMotor(FRMotor), BLMotor(BLMotor), BRMotor(BRMotor), compassSensor(compassSensor)
 {
-    myPID.SetMode(AUTOMATIC); 
+    myPID = new PID(&Input, &Output, &Setpoint, kp, ki, kd, REVERSE);
+    myPID->SetMode(AUTOMATIC);
 }
 
-double Movement::findCorrection(double desiredOrientation) {
+double Movement::findCorrection() {
   double correction = 0;
-  // - desiredOrientation or positive (doesn't really matter anymore because no goalAngle)
-  double orientationDiff = compassSensor.currentOffset() - desiredOrientation;
+  double orientationDiff = compassSensor.currentOffset();
 
   Input = abs(orientationDiff);
-  myPID.Compute();
+  myPID->Compute();
 
   if (orientationDiff > 90) {
     correction = -1;
@@ -29,11 +27,19 @@ double Movement::findCorrection(double desiredOrientation) {
     correction = (Output / 100);
   }
 
+  Serial.println("Correction: " + String(correction));
+
   return correction;
 }
 
 // Need to add orientation to the movement function
-void Movement::movement(double intended_movement_angle, double speedfactor, double desiredOrientation) {
+void Movement::movement(double intended_movement_angle, double speedfactor) {
+  intended_movement_angle -= 180;
+
+  if (intended_movement_angle < 0) {
+    intended_movement_angle += 360;
+  }
+  
     double powerFR = Trig::Sin(intended_movement_angle - 53);
     double powerRR = Trig::Sin(intended_movement_angle - 127);
     double powerRL = Trig::Sin(intended_movement_angle - 233);
@@ -46,24 +52,19 @@ void Movement::movement(double intended_movement_angle, double speedfactor, doub
     powerRR = powerRR / max_power;
     powerRL = powerRL / max_power;
 
-    double correction = findCorrection(desiredOrientation);
+    // double correction = findCorrection();
 
-    powerFR += correction;
-    powerFL += correction;
-    powerRR += correction;
-    powerRL += correction;
+    // powerFR += correction;
+    // powerFL += correction;
+    // powerRR += correction;
+    // powerRL += correction;
 
-    max_power = fmax(fmax(abs(powerFR), abs(powerFL)), fmax(abs(powerRR), abs(powerRL)));
+    // max_power = fmax(fmax(abs(powerFR), abs(powerFL)), fmax(abs(powerRR), abs(powerRL)));
 
-    powerFR = powerFR / max_power;
-    powerFL = powerFL / max_power;
-    powerRR = powerRR / max_power;
-    powerRL = powerRL / max_power;
-
-    // Serial.println(speedfactor * powerFL);
-    // Serial.println(speedfactor * powerFR);
-    // Serial.println(speedfactor * powerRL);
-    // Serial.println(speedfactor * powerRR);
+    // powerFR = powerFR / max_power;
+    // powerFL = powerFL / max_power;
+    // powerRR = powerRR / max_power;
+    // powerRL = powerRL / max_power;
 
     if (powerFL > 1) {
       powerFL = 1;
@@ -91,9 +92,9 @@ void Movement::movement(double intended_movement_angle, double speedfactor, doub
 
 
     this->FLMotor.setSpeed(speedfactor * powerFL);
-    this->FRMotor.setSpeed(-speedfactor * powerFR);
+    this->FRMotor.setSpeed(speedfactor * powerFR);
     this->BLMotor.setSpeed(speedfactor * powerRL);
-    this->BRMotor.setSpeed(-speedfactor * powerRR);
+    this->BRMotor.setSpeed(speedfactor * powerRR);
 }
 
 void Movement::circle() {
@@ -101,4 +102,11 @@ void Movement::circle() {
     this->FRMotor.setSpeed(0.2);
     this->BLMotor.setSpeed(0.2);
     this->BRMotor.setSpeed(0.2);
+}
+
+void Movement::stop() {
+    this->FLMotor.setSpeed(0);
+    this->FRMotor.setSpeed(0);
+    this->BLMotor.setSpeed(0);
+    this->BRMotor.setSpeed(0);
 }

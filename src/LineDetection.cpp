@@ -13,7 +13,7 @@ LineDetection::LineDetection() {
         // sensorAngles = [0,15,30,45,60] - think of this as relative to how our robot moves when we put this angle in to movement function
         // if say adc 3 last sensor is front and center, then sensorAngle[0] should be 345, sensorAngle[1] should be 0 and so on - you can gpt a loop for this or something if this issue occurs 
         // this is all assuming that adc 1,2,3 are directly in order with there being 8 sensors of adc1, then right after (clockwise) all sensors of adc 2 and so on - if not just call Prem or figure it out by looking at ballAngle() method in BallFinding.cpp
-        sensorAngles[i] = i * 15;
+        sensorAngles[i] = (i * 15) + 7.5;
         // sinValues[i] = sin(sensorAngles[i]);
         cosValues[i] = Trig::Cos(sensorAngles[i]);
     }
@@ -25,22 +25,16 @@ LineDetection::LineDetection() {
 }
 
 void LineDetection::getSensorValues() {
-    for (int i = 0; i < 24; i++) {
-        int adcnum = i / 8;
-        int channel  = i%8;
-
-        switch (adcnum) {
-            case 0:
-                vals[i] = adc1.analogRead(channel);
-                break;
-            case 1:
-                vals[i] = adc2.analogRead(channel);
-                break;
-            case 2:
-                vals[i] = adc3.analogRead(channel);
-                break;
-        }   
-
+    for (int i = 0; i < 24; i++) {   
+        if (i >= 0 && i <= 2) {
+            vals[i] = adc3.analogRead(5+i);
+        } else if (i >= 3 && i <= 10) {
+            vals[i] = adc1.analogRead(i-3);
+        } else if (i >= 11 && i <= 18) {
+            vals[i] = adc2.analogRead(i-11);
+        } else {
+            vals[i] = adc3.analogRead(i-19);
+        }
     }
 
     for (int i = 0; i < 24; i++) {
@@ -57,13 +51,16 @@ void LineDetection::getSensorValues() {
 }
 
 
-void LineDetection::getIntersectionAngle(int* sensorVals) {
+void LineDetection::getIntersectionAngle(int* inputVals) {
+    Serial.println("Getting intersection angle");
+
     for (int i = 0; i < 24; i++) {
-        if (sensorVals[i] >  calibrateVals[i]) {
-            sensorVals[i] = 1;
+        if (vals[i] >  calibrateVals[i]) {
+            lineDetectedVals[i] = 1;
             lineDetected = true;
+            Serial.println("Line has been detected");
         } else {
-            sensorVals[i] = 0;
+            lineDetectedVals[i] = 0;
         }
     }
 
@@ -76,8 +73,8 @@ void LineDetection::getIntersectionAngle(int* sensorVals) {
     double minDotProduct = 2;
     for (int i = 0; i < 24; i++) {
         for (int j = 0; j < 24; j++) {
-            if (sensorVals[i] == 1 && sensorVals[j] == 1) {
-                double dotProduct = Trig::Cos(j * 15 - i * 15);
+            if (lineDetectedVals[i] == 1 && lineDetectedVals[j] == 1) {
+                double dotProduct = Trig::Cos(sensorAngles[j] - sensorAngles[i]);
                 if (dotProduct < minDotProduct) {
                     minDotProduct = dotProduct;
                     theta1 = i;
@@ -90,17 +87,29 @@ void LineDetection::getIntersectionAngle(int* sensorVals) {
     
     int temp = theta1;
     theta1 = min(theta1, theta2);
+    theta2 = max(temp, theta2);
+
 
 
     // Serial.println("The greatest distance between the two sensors that see lines are: " + String(theta1) + " and " + String(theta2));
 
-    if (theta2 - theta1 < 180) {
-        intersectionAngle = Trig::avg(theta1, theta2);
-        sensorAngle = theta2-theta1;
+    if (abs(sensorAngles[theta2] - sensorAngles[theta1]) < 180) {
+        intersectionAngle = Trig::avg(sensorAngles[theta1], sensorAngles[theta2]);
+        sensorAngle = abs(sensorAngles[theta2] - sensorAngles[theta1]);
     } else {
-        intersectionAngle = Trig::avg(theta1, theta2 - 360);
-        sensorAngle = (360-(theta2 - theta1));
+        double angle1 = sensorAngles[theta1];
+        double angle2 = sensorAngles[theta2];
+
+        if (angle1 < angle2) angle1 += 360;
+        else angle2 += 360;
+
+        intersectionAngle = Trig::avg(angle1, angle2);
+        if (intersectionAngle >= 360) intersectionAngle -= 360;
+
+        sensorAngle = 360 - abs(sensorAngles[theta2] - sensorAngles[theta1]);
     }
+    anglebisc = intersectionAngle;
+
 
 }
 
@@ -113,51 +122,109 @@ double LineDetection::getChord() {
     return (2 * Trig::Sin(sensorAngle/2));
 }
 
+void LineDetection::sensorsDetectedLine() {
+    for (int i = 0; i < 24; i++) {
+        if (lineDetectedVals[i] == 1) {
+            Serial.println("Sensor " + String(i) + " detected line");
+        }
+    }
+}
 
+
+// double LineDetection::Output() {
+//     getSensorValues();
+//     getIntersectionAngle(vals);
+//     if (lineDetected) {
+//         // Serial.println("Line Detected");
+
+//         // if (linefollow) {
+//         //     double chord = getChord();
+//         //     if ((crossLine && (chord < chordThreshold)) ) {
+//         //         if (chord < 1) {
+//         //             return -correctionValLineFollow;
+//         //         } else {
+//         //             return correctionValLineFollow;
+//         //         }
+//         //     }
+//         // } 
+//         // else {
+//             if (initialAngle == -1) {
+//                 initialAngle = intersectionAngle;
+//             }
+//             currentAngle = intersectionAngle;
+//             angleDiff = abs(currentAngle - initialAngle);
+//             initialAngle = currentAngle;
+//             if (angleDiff > 180) {
+//                 angleDiff = 360 - angleDiff;
+//             }
+//             if (angleDiff > 100 && !crossLine) {
+//                 crossLine = true;
+//                 angleDiff = 0;
+//             }
+//             if (crossLine) {
+//                 intersectionAngle += 180;
+//                 if (intersectionAngle > 360) {
+//                     intersectionAngle -= 360;
+//                 }
+//                 if (angleDiff > 100) {
+//                     crossLine = false;
+//                 }
+//             }
+//         lineDetected = false;
+//         // }
+//     } else {
+//         crossLine = false;
+//         initialAngle = -1;
+//         intersectionAngle = -1;
+//     }
+
+//     angleDiff = 0;
+//     return intersectionAngle;
+// }
 
 double LineDetection::Output() {
+    getSensorValues();
+    getIntersectionAngle(vals);
+
     if (lineDetected) {
-        getSensorValues();
-        getIntersectionAngle(vals);
-        if (linefollow) {
-            double chord = getChord();
-            if ((crossLine && (chord < chordThreshold)) ) {
-                if (chord < 1) {
-                    return -correctionValLineFollow;
-                } else {
-                    return correctionValLineFollow;
-                }
-            }
+        double currChord = getChord();
+        // Serial.print("Chord length: ");
+        // Serial.println(chord);
+
+        if (currChord >= chordThreshold) {
+            crossLine = !crossLine;
+        }
+
+        if (crossLine) {
+            avoidanceAngle = anglebisc;  
         } else {
-            if (initialAngle == -1) {
-            initialAngle = intersectionAngle;
-            }
-            currentAngle = intersectionAngle;
-            angleDiff = abs(currentAngle - initialAngle);
-            initialAngle = currentAngle;
-            if (angleDiff > 180) {
-                angleDiff = 360 - angleDiff;
-            }
-            if (angleDiff > 100 && !crossLine) {
-                crossLine = true;
-                angleDiff = 0;
-            }
-            if (crossLine) {
-                intersectionAngle += 180;
-                if (intersectionAngle > 360) {
-                    intersectionAngle -= 360;
-                }
-                if (angleDiff > 100) {
-                    crossLine = false;
-                }
+            avoidanceAngle = anglebisc + 180;
+            if (avoidanceAngle >= 360) {
+                avoidanceAngle -= 360;
             }
         }
+
+        // Serial.print("Avoidance Angle: ");
+        Serial.println(avoidanceAngle);
+
+        lineDetected = false;
+
+        prevChord = currChord;
+
     } else {
         crossLine = false;
         initialAngle = -1;
-        intersectionAngle = -1;
+        avoidanceAngle = -1;
+
+        // Serial.println("No line detected — state reset");
     }
 
+    //  if (crossLine) {
+    //     Serial.println("Crossline is TRUE");
+    // } else {
+    //     Serial.println("Crossline is FALSE");
+    // }
+
     angleDiff = 0;
-    return intersectionAngle;
+    return avoidanceAngle;
 }

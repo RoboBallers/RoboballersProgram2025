@@ -17,13 +17,13 @@ double BallFinding::ballAngle() {
 
         switch (adcnum) {
             case 0:
-                sensorVals[i] = adc4.analogRead(channel);
+                sensorVals[i] = adc4.analogRead(7-channel);
                 break;
             case 1:
-                sensorVals[i] = adc6.analogRead(channel);
+                sensorVals[i] = adc5.analogRead(7-channel);
                 break;
             case 2:
-                sensorVals[i] = adc5.analogRead(8 - channel);
+                sensorVals[i] = adc6.analogRead(7-channel);
                 break;
         }   
 
@@ -32,20 +32,26 @@ double BallFinding::ballAngle() {
     for (int i = 0; i < 24; i++) {
         if (sensorVals[i] > 1020 || sensorVals[i] < 5) {
             if (i == 0) {
-                sensorVals[i] = sensorVals[i+1];
+                // Serial.println("Finding average of sensor 0");
+                sensorVals[i] = (sensorVals[23] + sensorVals[1]) / 2;
             } else if (i == 23) {
-                sensorVals[i] = sensorVals[i-1];
+                sensorVals[i] = (sensorVals[0] + sensorVals[22]) / 2;
             } else {
             sensorVals[i] = (sensorVals[i+1] + sensorVals[i-1]) / 2;
+            }
         }
-        }
+
+        sensorVals[15] = Trig::avg(sensorVals[14], sensorVals[16]);
     }
 
     // Front and Center is on the side of the main switch and battery
     for (int i = 0; i < 24; i++) {
-        totalCos += (-sensorVals[i] * Trig::Cos(i * 15 - 15));
-        totalSin += (-sensorVals[i] * Trig::Sin(i * 15 - 15));
+        totalCos += (sensorVals[i] * Trig::Cos(i * 15));
+        totalSin += (sensorVals[i] * Trig::Sin(i * 15));
     }
+
+    // Serial.println("Total Cos" + String(totalCos));
+    // Serial.println("Total Sin" + String(totalSin));
 
     double ballAngle = Trig::toDegrees(atan2(totalSin, totalCos));
     
@@ -53,7 +59,14 @@ double BallFinding::ballAngle() {
         ballAngle += 360;
     }
 
-    ballAngle = 360 - ballAngle;
+    // ballAngle = (360-ballAngle);
+
+    ballAngle += 180;
+
+    if (ballAngle > 360) {
+        ballAngle -= 360;
+    }
+
 
     return ballAngle;
 }
@@ -72,11 +85,11 @@ double BallFinding::orbit(double ballAngle) {
     // if the ball is in the second quadrant
     else if (ballAngle > 270) {
         ballAngle = 360-ballAngle;
-        orbit_val = -min(110,1.4*exp(0.2*ballAngle));
+        orbit_val = -min(110,1.4*exp(0.35*ballAngle)); // old 0.2
         orbit_val += 360;
     }
     else {
-        orbit_val = min(110,1.4*exp(0.2*ballAngle));
+        orbit_val = min(110,1.4*exp(0.35*ballAngle));
     }
 
     return orbit_val;

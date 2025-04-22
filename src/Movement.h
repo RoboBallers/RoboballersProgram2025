@@ -12,8 +12,8 @@ private:
     Motor BLMotor;
     Motor BRMotor;
 
-    CompassSensor compassSensor;
-    PID myPID;
+    CompassSensor& compassSensor;
+    PID* myPID;
 
     double max_power; 
     double Setpoint, Input, Output;
@@ -23,11 +23,12 @@ private:
     double kd = 0.001;
 
 public:
-    Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor);
-    void movement(double intended_movement_angle, double speedfactor, double desiredOrientation);
-    double findCorrection(double desiredOrientation);
+    Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor, CompassSensor& compassSensor);
+    void movement(double intended_movement_angle, double speedfactor);
+    double findCorrection();
     double CorrectionAngle();
     void circle();
+    void stop();
     
 
 };
