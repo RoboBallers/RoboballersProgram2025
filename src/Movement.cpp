@@ -27,7 +27,7 @@ double Movement::findCorrection() {
     correction = (Output / 100);
   }
 
-  Serial.println("Correction: " + String(correction));
+  // Serial.println("Correction: " + String(correction));
 
   return correction;
 }
@@ -52,19 +52,19 @@ void Movement::movement(double intended_movement_angle, double speedfactor) {
     powerRR = powerRR / max_power;
     powerRL = powerRL / max_power;
 
-    // double correction = findCorrection();
+    double correction = findCorrection();
 
-    // powerFR += correction;
-    // powerFL += correction;
-    // powerRR += correction;
-    // powerRL += correction;
+    powerFR -= correction;
+    powerFL -= correction;
+    powerRR -= correction;
+    powerRL -= correction;
 
-    // max_power = fmax(fmax(abs(powerFR), abs(powerFL)), fmax(abs(powerRR), abs(powerRL)));
+    max_power = fmax(fmax(abs(powerFR), abs(powerFL)), fmax(abs(powerRR), abs(powerRL)));
 
-    // powerFR = powerFR / max_power;
-    // powerFL = powerFL / max_power;
-    // powerRR = powerRR / max_power;
-    // powerRL = powerRL / max_power;
+    powerFR = powerFR / max_power;
+    powerFL = powerFL / max_power;
+    powerRR = powerRR / max_power;
+    powerRL = powerRL / max_power;
 
     if (powerFL > 1) {
       powerFL = 1;

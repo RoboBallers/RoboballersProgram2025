@@ -18,7 +18,7 @@ private:
     double max_power; 
     double Setpoint, Input, Output;
 
-    double kp = 0.35;
+    double kp = 1;
     double ki = 0;
     double kd = 0.001;
 

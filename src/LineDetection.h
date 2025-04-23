@@ -18,6 +18,8 @@ public:
     int calibrateVals[24];
     int lineDetectedVals[24];
     void sensorsDetectedLine();
+    bool crossLine;
+
 
 
 
@@ -38,18 +40,17 @@ private:
     int sck = 13;
     int mosi = 11;
     int miso = 12;
-    bool crossLine;
     double initialAngle;
     double currentAngle;
     double angleDiff;
     bool linefollow;
     double correctionValLineFollow;
-    double chordThreshold = 1.95; // change to 1.85?
+    double chordThreshold = 1.97; // change to 1.85?
     int avoidanceAngle = -1;
     double anglebisc = -1;
     double prevChord = -1;
     double currChord = -1;
-    double chordDifferenceThres = 0.1;
+    // double chordDifferenceThres = 0.1;
 };
 
 #endif // LINEDETECTION_H

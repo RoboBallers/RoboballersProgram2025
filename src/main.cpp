@@ -29,6 +29,9 @@ const int kicker = 26;
 
 double OffsetedOrientation = 0;
 
+bool compassdone = false;
+bool compassDone2 = false;
+
 Motor FL(FLIN1, FLIN2, FLEnable);
 Motor FR(FRIN1, FRIN2, FREnable);
 Motor BL(BLIN1, BLIN2, BLEnable);
@@ -66,7 +69,7 @@ void setup() {
 
   Serial.begin(9600);
 
-  // compassSensor.callibrate();
+  compassSensor.callibrate();
 }
 
 void testingballSensors() {
@@ -193,28 +196,36 @@ void loop() {
   if(switches.isStart()) {
     // Serial.println("Start switch is on");
     // Serial.println("Line Angle to move at: " + String(line.Output()));
-    if (line.Output() != -1) {
-      movement.movement(line.Output(), 0.35);
-      delay(10);
+    double lineAngle = line.Output();
+
+    if (lineAngle != -1) {
+        movement.movement(lineAngle, 0.5);
+        Serial.println("Line Angle to move at: " + String(lineAngle));
     } else {
-      movement.stop();
+        double orbitAngle = ballFinding.orbit(ballFinding.ballAngle());
+        movement.movement(orbitAngle, 0.7);
+        Serial.println("Ball Orbit: " + String(orbitAngle));
     }
     // Serial.println("Ball Angle: " + String(ballFinding.ballAngle()));
     // Serial.println("Ball Orbit: " + String(ballFinding.orbit(ballFinding.ballAngle())));
-    // movement.movement(ballFinding.orbit(ballFinding.ballAngle()), 0.5);
-    // movement.movement(315,0.25);
 
-    // if (goal.haveBall()) {
-    //   goal.score();
-    // }
+    if (goal.haveBall()) {
+      goal.score();
+    }
 
     // testingLineAngle();
     // Serial.println("Chord length: " + String(line.getChord()));
-    Serial.println(line.Output());
+    // Serial.println("Avoidance angle: " + String(line.Output()));
 
-    line.lineDetected = false;
+    // line.lineDetected = false;
   } else {
-    // calibration.calibrateCompassSensor();
+    calibration.calibrateCompassSensor();
+    compassdone = true;
+    if (compassdone && !compassDone2) {
+        compassDone2 = true;
+        FL.setSpeed(0.3);
+        delay(400);
+    }
     movement.stop();
     if (switches.isCalibrateLine()) {
       Serial.println("Callibrating Line sensors");
@@ -225,22 +236,10 @@ void loop() {
     }
   }
 
+  delay(20);
   goal.kickBackground();
 
-  // testingMotors();
-
-//kickerWithOrbit();
-// testingLineSensors();
-// delay(1000);
-// Serial.println();
-  //BR.setSpeed(0.5);
-  
-
-  // if (abs(goal.prevGoalDiode - goal.currGoalDiode) >= 2) {
-  //   goal.score();
-  // }
-
-  // goal.prevGoalDiode = goal.currGoalDiode;
+  goal.prevGoalDiode = goal.currGoalDiode;
 }
 
 /*
