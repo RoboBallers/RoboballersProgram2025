@@ -11,17 +11,19 @@ class Goal {
         void score();
         void beginCamera();
         void sendColor(char c);
-        bool haveBall();
         void kickBackground();
         int lightGate = 15;
         int prevGoalDiode = 0;
         int currGoalDiode = 0;
+        int minDiode = 1000;
+        int maxDiode = 0;
+
     private:
         CompassSensor& compassSensor;
         int kickerPin = 26;
         elapsedMillis timer;
         elapsedMillis active;
-        int kickHold = 1000;
+        int kickHold = 1500; // originally 1000
         int threshold = 80;
   
 

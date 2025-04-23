@@ -12,7 +12,6 @@ void Goal::score() {
     {
         timer = 0;
     }
-    // if (timer <= kickHold && haveBall())
     if (timer <= kickHold)
     {
         digitalWrite(kickerPin, HIGH);
@@ -39,16 +38,6 @@ void Goal::sendColor(char color) {
     Serial2.write(color);
 }
 
-bool Goal::haveBall() {
-    Serial.println("Have Ball Diode reading value: " + String(analogRead(lightGate)));
-    
-    if (abs(currGoalDiode - prevGoalDiode) > 40)
-    {
-        return true;
-    }
-    return false;
-
-}
 
 
 // double Goal::retrieveAngle() {

@@ -45,7 +45,8 @@ BallFinding ballFinding;
 Switches switches;
 Goal goal(compassSensor);
 
-elapsedMillis orbitTimeElapsed;
+elapsedMillis orbitBallTimer;
+bool ballInFront = false;
 
 
 void setup() {
@@ -164,32 +165,7 @@ void testingMotors2() {
   analogWrite(BLEnable, 150);
 }
 
-void kickerWithOrbit() {
-  if(switches.isStart()) {
-    Serial.println("Start switch is on");
 
-    Serial.println("Ball Angle: " + String(ballFinding.ballAngle()));
-    Serial.println("Ball Orbit: " + String(ballFinding.orbit(ballFinding.ballAngle())));
-    movement.movement(ballFinding.orbit(ballFinding.ballAngle()), 0.5);
-
-    if (goal.haveBall()) {
-      goal.score();
-    }
-  } else {
-    calibration.calibrateCompassSensor();
-    movement.stop();
-    if (switches.isCalibrateLine()) {
-      Serial.println("Callibrating Line sensors");
-      calibration.calibrateLineSensors();
-      for (int i = 0; i < 24; i++) {
-        Serial.println("Calibrated line value for sensor " + String(i) + " is: " + String(line.calibrateVals[i]));
-      }
-    }
-  }
-
-
-  goal.kickBackground();
-}
 
 void loop() {
   goal.currGoalDiode = analogRead(goal.lightGate);
@@ -201,17 +177,26 @@ void loop() {
     if (lineAngle != -1) {
         movement.movement(lineAngle, 0.5);
         Serial.println("Line Angle to move at: " + String(lineAngle));
-    } else {
+    } 
+    else {
         double orbitAngle = ballFinding.orbit(ballFinding.ballAngle());
-        movement.movement(orbitAngle, 0.7);
+        movement.movement(orbitAngle, 0.65);
         Serial.println("Ball Orbit: " + String(orbitAngle));
+        if (orbitAngle == 0) {
+          if (!ballInFront) {
+              ballInFront = true;
+              orbitBallTimer = 0;
+          } else if (orbitBallTimer >= 500) {
+              goal.score();
+          }
+      } else {
+          ballInFront = false;
+      }
     }
-    // Serial.println("Ball Angle: " + String(ballFinding.ballAngle()));
-    // Serial.println("Ball Orbit: " + String(ballFinding.orbit(ballFinding.ballAngle())));
+    Serial.println("Ball Angle: " + String(ballFinding.ballAngle()));
+    Serial.println("Ball Orbit: " + String(ballFinding.orbit(ballFinding.ballAngle())));
 
-    if (goal.haveBall()) {
-      goal.score();
-    }
+  
 
     // testingLineAngle();
     // Serial.println("Chord length: " + String(line.getChord()));
@@ -230,13 +215,12 @@ void loop() {
     if (switches.isCalibrateLine()) {
       Serial.println("Callibrating Line sensors");
       calibration.calibrateLineSensors();
-      for (int i = 0; i < 24; i++) {
-        Serial.println("Calibrated line value for sensor " + String(i) + " is: " + String(line.calibrateVals[i]));
-      }
-    }
+      // for (int i = 0; i < 24; i++) {
+      //   Serial.println("Calibrated line value for sensor " + String(i) + " is: " + String(line.calibrateVals[i]));
+      // }
+    } 
   }
 
-  delay(20);
   goal.kickBackground();
 
   goal.prevGoalDiode = goal.currGoalDiode;

@@ -4,12 +4,9 @@
 Switches::Switches() {
     
 }
-bool Switches::isBlue() {
-    return digitalRead(bluePin) == HIGH;
-}
 
-bool Switches::isCalibrateAngle() {
-    return digitalRead(calibrateAnglePin) == HIGH;
+bool Switches::isDiodeCalibration() {
+    return digitalRead(calDiodePin) == HIGH;
 }
 
 bool Switches::isStart() {
