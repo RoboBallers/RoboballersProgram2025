@@ -114,11 +114,6 @@ void LineDetection::getIntersectionAngle(int* inputVals) {
 }
 
 double LineDetection::getChord() {
-    // diam/maxdiam
-
-    // Maximum chord length is 2 meaning that half of the robot is on the other side of the line
-    // 2 means that the greatest distance between sensors that see the lines is 180 degrees
-    // Serial.println("Chord length detected: " + String(2 * Trig::Sin(sensorAngle/2)));
     return (2 * Trig::Sin(sensorAngle/2));
 }
 
@@ -130,71 +125,58 @@ void LineDetection::sensorsDetectedLine() {
     }
 }
 
-// double LineDetection::Output() {
-//     getSensorValues();
-//     getIntersectionAngle(vals);
-
-//     if (lineDetected) {
-//         double currChord = getChord();
-//         // Serial.print("Chord length: ");
-//         // Serial.println(chord);
-
-//         if (currChord >= chordThreshold) {
-//             crossLine = true;
-//         }
-
-//         if (crossLine) {
-//             avoidanceAngle = anglebisc;  
-//         } else {
-//             avoidanceAngle = anglebisc + 180;
-//             if (avoidanceAngle >= 360) {
-//                 avoidanceAngle -= 360;
-//             }
-//         }
-
-//         // Serial.print("Avoidance Angle: ");
-//         Serial.println(avoidanceAngle);
-
-//         lineDetected = false;
-
-//         prevChord = currChord;
-
-//     } else {
-//         crossLine = false;
-//         initialAngle = -1;
-//         avoidanceAngle = -1;
-
-//         // Serial.println("No line detected — state reset");
-//     }
-
-//     //  if (crossLine) {
-//     //     Serial.println("Crossline is TRUE");
-//     // } else {
-//     //     Serial.println("Crossline is FALSE");
-//     // }
-
-//     angleDiff = 0;
-//     return avoidanceAngle;
-// }
-
-
 double LineDetection::Output() {
     getSensorValues();
     getIntersectionAngle(vals);
 
     if (lineDetected) {
-        avoidanceAngle = anglebisc + 180;
-        if (avoidanceAngle >= 360) {
-            avoidanceAngle -= 360;
+        double currChord = getChord();
+        if (initialChord != 0) {
+            initialChord = currChord;
+        }
+        // Serial.print("Chord length: ");
+        // Serial.println(chord);
+
+        if (currChord >= chordThreshold && !thresholdPassed) {
+            thresholdPassed = true;
+        }
+
+        if (thresholdPassed && abs(currChord - initialChord)) {
+            crossLine = !crossLine;
+            initialChord = currChord;
+        }
+
+        if (crossLine) {
+            avoidanceAngle = anglebisc;  
+        } else {
+            avoidanceAngle = anglebisc + 180;
+            if (avoidanceAngle >= 360) {
+                avoidanceAngle -= 360;
+            }
         }
 
         // Serial.print("Avoidance Angle: ");
-        // Serial.println(avoidanceAngle);
+        Serial.println(avoidanceAngle);
 
         lineDetected = false;
+
+        prevChord = currChord;
+
     } else {
-        avoidanceAngle = -1; 
+        crossLine = false;
+        initialAngle = -1;
+        avoidanceAngle = -1;
+        initialChord = 0;
+        thresholdPassed = false;
+
+        // Serial.println("No line detected — state reset");
     }
+
+    //  if (crossLine) {
+    //     Serial.println("Crossline is TRUE");
+    // } else {
+    //     Serial.println("Crossline is FALSE");
+    // }
 
     return avoidanceAngle;
 }

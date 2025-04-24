@@ -1,5 +1,6 @@
 #include <BallFinding.h>
 #include <trig.h>
+#include <Circle.h>
 
 BallFinding::BallFinding() {
     adc4.begin(cs1,mosi,miso,sck);
@@ -71,27 +72,46 @@ double BallFinding::ballAngle() {
     return ballAngle;
 }
 
+double BallFinding::irDistance(int val) {
+    return (6.99 * pow(0.99, val));
+}
+
+double BallFinding::ballDistance() {
+   std::vector<std::pair<int, int>> valWithIndex;
+
+    for (int i = 0; i < 24; i++) {
+        valWithIndex.push_back({sensorVals[i], i});
+    }
+
+    std::sort(valWithIndex.begin(), valWithIndex.end());
+
+    int angle1 = valWithIndex[0].second * 15;
+    int angle2 = valWithIndex[1].second * 15;
+
+    auto [x0, y0, r0] = convertToStandard(-11 * Trig::Cos(angle1), -11 * Trig::Sin(angle2), irDistance(valWithIndex[0].first));
+    auto [x1, y1, r1] = convertToStandard(-11 * Trig::Cos(angle2), -11 * Trig::Sin(angle2), irDistance(valWithIndex[0].first));
+
+    auto points = circleIntersections(x0, y0, r0, x1, y1, r1);
+
+    double dist1 = (pow(points[0].x,2) + pow(points[0].y,2));
+    double dist2 = (pow(points[1].x,2) + pow(points[1].y,2));
+
+    return min(dist1, dist2);
+}
+
 double BallFinding::orbit(double ballAngle) {
     double orbit_val = 0;
 
-     if (ballAngle>80 && ballAngle<280) {
-        orbit_val = 180;
-    }
     // if ball is right in front of the robot
-    else if (350 < ballAngle || ballAngle < 10) {
+    if (350 < ballAngle || ballAngle < 10) {
         orbit_val = 0;
-    }
-    // if the ball is in the second quadrant
-    else if (ballAngle > 270) {
-        ballAngle = 360-ballAngle;
-        orbit_val = -min(110,1.4*exp(0.35*ballAngle)); // old 0.2
-        orbit_val += 360;
-    }
-    else {
-        orbit_val = min(110,1.4*exp(0.35*ballAngle));
+    } else {
+        orbit_val = ballAngle + exp(-0.06 * (ballDistance() - 90));
+        if (orbit_val > 360) {
+            orbit_val -= 360;
+        }
+        orbit_val = min(90,orbit_val);
     }
 
     return orbit_val;
-
-    // add in dampen
 }

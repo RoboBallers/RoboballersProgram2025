@@ -10,9 +10,9 @@ Movement::Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMoto
     myPID->SetMode(AUTOMATIC);
 }
 
-double Movement::findCorrection() {
+double Movement::findCorrection(double desiredOrientation) {
   double correction = 0;
-  double orientationDiff = compassSensor.currentOffset();
+  double orientationDiff = compassSensor.currentOffset() - desiredOrientation;
 
   Input = abs(orientationDiff);
   myPID->Compute();
@@ -33,7 +33,9 @@ double Movement::findCorrection() {
 }
 
 // Need to add orientation to the movement function
-void Movement::movement(double intended_movement_angle, double speedfactor) {
+void Movement::movement(double intended_movement_angle, double speedfactor, double desiredOrientation) {
+  localX += Trig::Cos(intended_movement_angle) * speedfactor * localizationConstant;
+
   intended_movement_angle -= 180;
 
   if (intended_movement_angle < 0) {
@@ -52,7 +54,7 @@ void Movement::movement(double intended_movement_angle, double speedfactor) {
     powerRR = powerRR / max_power;
     powerRL = powerRL / max_power;
 
-    double correction = findCorrection();
+    double correction = findCorrection(desiredOrientation);
 
     powerFR -= correction;
     powerFL -= correction;
@@ -95,6 +97,16 @@ void Movement::movement(double intended_movement_angle, double speedfactor) {
     this->FRMotor.setSpeed(speedfactor * powerFR);
     this->BLMotor.setSpeed(speedfactor * powerRL);
     this->BRMotor.setSpeed(speedfactor * powerRR);
+}
+
+double Movement::desiredOrientationCalc() {
+  if (localX >= 3) {
+    return -1 * (localX * 90 / localX);
+  } else if (localX <= -3) {
+    return (localX * 90 / localX);
+  } else {
+    return 0;
+  }
 }
 
 void Movement::circle() {

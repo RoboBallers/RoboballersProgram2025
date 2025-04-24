@@ -24,11 +24,13 @@ private:
 
 public:
     Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMotor, CompassSensor& compassSensor);
-    void movement(double intended_movement_angle, double speedfactor);
-    double findCorrection();
-    double CorrectionAngle();
+    void movement(double intended_movement_angle, double speedfactor, double desiredOrientation);
+    double findCorrection(double desiredOrientation);
     void circle();
     void stop();
+    double localX;
+    double localizationConstant = 0.5;
+    double desiredOrientationCalc();
     
 
 };

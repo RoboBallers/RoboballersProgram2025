@@ -175,12 +175,17 @@ void loop() {
     double lineAngle = line.Output();
 
     if (lineAngle != -1) {
-        movement.movement(lineAngle, 0.5);
+        movement.movement(lineAngle, 0.5, 0);
+        if (lineAngle > 50 && lineAngle < 125) {
+          movement.localX = -5;
+        } else if (lineAngle > 235 && lineAngle < 315) {
+          movement.localX = 5;
+        }
         Serial.println("Line Angle to move at: " + String(lineAngle));
     } 
     else {
         double orbitAngle = ballFinding.orbit(ballFinding.ballAngle());
-        movement.movement(orbitAngle, 0.65);
+        movement.movement(orbitAngle, 0.65, movement.desiredOrientationCalc());
         Serial.println("Ball Orbit: " + String(orbitAngle));
         if (orbitAngle == 0) {
           if (!ballInFront) {

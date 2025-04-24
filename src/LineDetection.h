@@ -50,7 +50,9 @@ private:
     double anglebisc = -1;
     double prevChord = -1;
     double currChord = -1;
-    // double chordDifferenceThres = 0.1;
+    double chordDifferenceThres = 0.1;
+    double initialChord = 0;
+    bool thresholdPassed;
 };
 
 #endif // LINEDETECTION_H

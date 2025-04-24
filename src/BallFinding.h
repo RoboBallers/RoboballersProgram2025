@@ -8,6 +8,9 @@ class BallFinding {
     BallFinding();
     double ballAngle();
     double orbit(double ballAngle);
+    double irDistance(int val);
+    double ballDistance();
+    double circleIntersection();
     int sensorVals[24];
 
 
