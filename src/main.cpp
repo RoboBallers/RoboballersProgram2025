@@ -165,22 +165,19 @@ void testingMotors2() {
   analogWrite(BLEnable, 150);
 }
 
-
-
-void loop() {
-  goal.currGoalDiode = analogRead(goal.lightGate);
+void process() {
   if(switches.isStart()) {
     // Serial.println("Start switch is on");
     // Serial.println("Line Angle to move at: " + String(line.Output()));
     double lineAngle = line.Output();
 
     if (lineAngle != -1) {
-        movement.movement(lineAngle, 0.5);
+        movement.movement(lineAngle, 0.6);
         Serial.println("Line Angle to move at: " + String(lineAngle));
     } 
     else {
         double orbitAngle = ballFinding.orbit(ballFinding.ballAngle());
-        movement.movement(orbitAngle, 0.65);
+        movement.movement(orbitAngle, 0.8);
         Serial.println("Ball Orbit: " + String(orbitAngle));
         if (orbitAngle == 0) {
           if (!ballInFront) {
@@ -224,6 +221,11 @@ void loop() {
   goal.kickBackground();
 
   goal.prevGoalDiode = goal.currGoalDiode;
+}
+
+
+void loop() {
+  process();
 }
 
 /*
