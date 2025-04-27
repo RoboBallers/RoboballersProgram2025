@@ -4,13 +4,13 @@
 class Switches {
     public:
     Switches();
-    bool isDiodeCalibration();
+    bool isCompassCalibration();
     bool isCalibrateLine();
     bool isStart();
 
     private:
     int startPin = 27;
-    int calDiodePin = 29;
+    int comapssCalibrationPin = 29;
     int calibrateLinePin = 28;
 
 };

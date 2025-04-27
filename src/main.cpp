@@ -171,13 +171,39 @@ void process() {
     // Serial.println("Line Angle to move at: " + String(line.Output()));
     double lineAngle = line.Output();
 
-    if (lineAngle != -1) {
+    //   if (line.getChord() > 0.4 && lineAngle != -1) {
+    //     movement.movement(lineAngle,0.6);
+    //   } else {
+    //       if (lineAngle == - 1) {
+    //           lineAngle = 0;
+    //       }
+    //           double orbitAngle = ballFinding.orbit(ballFinding.ballAngle());
+    //           movement.movement((lineAngle + orbitAngle) / 2, 0.9);
+    //           Serial.println("Ball Orbit: " + String(orbitAngle));
+    //           if (orbitAngle == 0) {
+    //             if (!ballInFront) {
+    //                 ballInFront = true;
+    //                 orbitBallTimer = 0;
+    //             } else if (orbitBallTimer >= 500) {
+    //                 goal.score();
+    //             }
+    //         } else {
+    //             ballInFront = false;
+    //         }
+    // }
+
+
+
+
+    if (lineAngle != -1 && line.getChord() > 0.25) {
+      // while (line.lineDetectedFunc()) {
         movement.movement(lineAngle, 0.6);
+      // }
         Serial.println("Line Angle to move at: " + String(lineAngle));
     } 
     else {
         double orbitAngle = ballFinding.orbit(ballFinding.ballAngle());
-        movement.movement(orbitAngle, 0.8);
+        movement.movement(orbitAngle, 0.55);
         Serial.println("Ball Orbit: " + String(orbitAngle));
         if (orbitAngle == 0) {
           if (!ballInFront) {
@@ -200,7 +226,8 @@ void process() {
     // Serial.println("Avoidance angle: " + String(line.Output()));
 
     // line.lineDetected = false;
-  } else {
+  } else if (switches.isCompassCalibration()) {
+    Serial.println("Callibrating Compass");
     calibration.calibrateCompassSensor();
     compassdone = true;
     if (compassdone && !compassDone2) {
@@ -209,14 +236,19 @@ void process() {
         delay(400);
     }
     movement.stop();
-    if (switches.isCalibrateLine()) {
-      Serial.println("Callibrating Line sensors");
-      calibration.calibrateLineSensors();
+  }
+  
+  else if (switches.isCalibrateLine()) {
+    movement.stop();
+    Serial.println("Callibrating Line sensors");
+    calibration.calibrateLineSensors();
+
       // for (int i = 0; i < 24; i++) {
       //   Serial.println("Calibrated line value for sensor " + String(i) + " is: " + String(line.calibrateVals[i]));
       // }
-    } 
-  }
+    } else {
+      movement.stop();
+    }
 
   goal.kickBackground();
 
@@ -226,6 +258,8 @@ void process() {
 
 void loop() {
   process();
+
+  // delay(400);
 }
 
 /*

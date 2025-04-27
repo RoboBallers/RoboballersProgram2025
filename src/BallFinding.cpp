@@ -75,7 +75,13 @@ double BallFinding::orbit(double ballAngle) {
     double orbit_val = 0;
 
      if (ballAngle>80 && ballAngle<280) {
-        orbit_val = 180;
+        // if (ballAngle > 160 && ballAngle < 180) {
+        //     orbit_val = 210;
+        // } else if (ballAngle > 180 && ballAngle < 200) {
+        //     orbit_val = 150;
+        // } else {
+            orbit_val = 180;
+        // }
     }
     // if ball is right in front of the robot
     else if (350 < ballAngle || ballAngle < 10) {

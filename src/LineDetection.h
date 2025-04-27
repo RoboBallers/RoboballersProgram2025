@@ -19,6 +19,7 @@ public:
     int lineDetectedVals[24];
     void sensorsDetectedLine();
     bool crossLine;
+    bool lineDetectedFunc();
 
 
 

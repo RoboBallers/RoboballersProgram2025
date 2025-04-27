@@ -198,3 +198,13 @@ double LineDetection::Output() {
 
     return avoidanceAngle;
 }
+
+bool LineDetection::lineDetectedFunc() {
+    for (int i = 0; i < 24; i++) {
+        if (vals[i] >  calibrateVals[i]) {
+            return true;
+        }
+    }
+
+    return false;
+}

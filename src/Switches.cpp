@@ -5,8 +5,8 @@ Switches::Switches() {
     
 }
 
-bool Switches::isDiodeCalibration() {
-    return digitalRead(calDiodePin) == HIGH;
+bool Switches::isCompassCalibration() {
+    return digitalRead(comapssCalibrationPin) == HIGH;
 }
 
 bool Switches::isStart() {
