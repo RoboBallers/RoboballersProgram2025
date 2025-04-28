@@ -17,10 +17,14 @@ double Movement::findCorrection(double goalDirection) {
   double correction = 0;
   double orientationDiff = compassSensor.currentOffset() - goalDirection;
 
+  Serial.println("Orientation Diff: " + String(orientationDiff));
+
   Input = abs(orientationDiff);
   myPID->Compute();
 
-  if (orientationDiff > 90) {
+  if (abs(orientationDiff) < 7) {
+    correction = 0;
+  } if (orientationDiff > 90) {
     correction = -1;
   } else if (orientationDiff < -90) {
     correction = 1;

@@ -24,9 +24,9 @@ private:
     double ki = 0;
     double kd = 0.001;
 
-    double kp2 = 0.73;
+    double kp2 = 0.12;
     double ki2 = 0;
-    double kd2 = 0.002;
+    double kd2 = 0.005;
 
 
 public:

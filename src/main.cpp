@@ -183,19 +183,23 @@ void process() {
     double haveBallAverage = (ballFinding.sensorVals[0] + ballFinding.sensorVals[23] + ballFinding.sensorVals[1]) / 3;
     // Serial.println("Start switch is on");
     // Serial.println("Line Angle to move at: " + String(line.Output()));
-    desiredOrientation = goal.retrieveAngle();
+    // desiredOrientation = goal.retrieveAngle();
 
-    if (abs(desiredOrientation) > 45 && desiredOrientation != 999) {
-      desiredOrientation = 0;
-    }
+    // Serial.println("Desired Orientation: " + String(desiredOrientation));
 
-    if (desiredOrientation == 999) {
-      desiredOrientation = 0;
-    } else {
-        desiredOrientation = compassSensor.currentOffset() - desiredOrientation;
-    }
+    // if (abs(desiredOrientation) > 45 && desiredOrientation != 999) {
+    //   Serial.println("Desired Orientation is greater than 45 so changing it to 0");
+    //   desiredOrientation = 0;
+    // }
 
-    Serial.println("Desired Orientation: " + String(desiredOrientation));
+    // if (desiredOrientation == 999) {
+    //   Serial.println("Desired Orientation is 999 so changing it to 0");
+    //   desiredOrientation = 0;
+    // } else {
+    //     desiredOrientation = compassSensor.currentOffset() - desiredOrientation;
+    // }
+
+    // Serial.println("Desired Orientation: " + String(desiredOrientation));
     double lineAngle = line.Output();
     double orbitAngle = ballFinding.orbit(ballFinding.ballAngle());
 
@@ -219,7 +223,7 @@ void process() {
         Serial.println();
         Serial.println();
         Serial.println();
-        movement.movement(orbitAngle, 0.55, 0);
+        movement.movement(orbitAngle, 0.6, 0);
         // movement.movement(0,0.55,0);
         lineCount = 0;
       } else {
@@ -230,7 +234,8 @@ void process() {
         // Serial.println("Line Angle to move at: " + String(lineAngle));
     } 
     else {
-        movement.movement(orbitAngle, 0.55, desiredOrientation);
+        movement.movement(orbitAngle, 0.65, 0);
+        // movement.rotateToGoal(desiredOrientation,0.75);
         // Serial.println("Ball Orbit: " + String(orbitAngle));
         if (orbitAngle == 0 && haveBallAverage < 400) {
           if (!ballInFront) {
@@ -243,8 +248,8 @@ void process() {
           ballInFront = false;
       }
     }
-    Serial.println("Ball Angle: " + String(ballFinding.ballAngle()));
-    Serial.println("Ball Orbit: " + String(ballFinding.orbit(ballFinding.ballAngle())));
+    // Serial.println("Ball Angle: " + String(ballFinding.ballAngle()));
+    // Serial.println("Ball Orbit: " + String(ballFinding.orbit(ballFinding.ballAngle())));
 
     // testingLineAngle();
     // Serial.println("Chord length: " + String(line.getChord()));
@@ -279,7 +284,7 @@ void process() {
   goal.kickBackground();
 
   if (lineAvoidanceTimer > 1500) {
-    Serial.println("Line avoidance timer being reset");
+    // Serial.println("Line avoidance timer being reset");
     lineAvoidanceTimer = 0;
     lineCount = 0;
   }
@@ -330,7 +335,7 @@ void loop() {
   process();
 
 
-  // delay(400);
+  //  delay(400);
   // testingCamera();
   // Serial.println();
   // delay(400);
