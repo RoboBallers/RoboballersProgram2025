@@ -8,11 +8,14 @@ Movement::Movement(Motor& FLMotor, Motor& FRMotor, Motor& BLMotor, Motor& BRMoto
 {
     myPID = new PID(&Input, &Output, &Setpoint, kp, ki, kd, REVERSE);
     myPID->SetMode(AUTOMATIC);
+
+    myPID2 = new PID(&Input2, &Output2, &Setpoint2, kp2, ki2, kd2, REVERSE);
+    myPID2->SetMode(AUTOMATIC);
 }
 
-double Movement::findCorrection() {
+double Movement::findCorrection(double goalDirection) {
   double correction = 0;
-  double orientationDiff = compassSensor.currentOffset();
+  double orientationDiff = compassSensor.currentOffset() - goalDirection;
 
   Input = abs(orientationDiff);
   myPID->Compute();
@@ -32,8 +35,49 @@ double Movement::findCorrection() {
   return correction;
 }
 
+double Movement::goalCorrection(double goalDirection) {
+  double correction = 0;
+  double orientationDiff = compassSensor.currentOffset() - goalDirection;
+
+  Input2 = abs(orientationDiff);
+  myPID2->Compute();
+
+  if (abs(orientationDiff) < 7) {
+    correction = 0;
+  } else if (orientationDiff > 30) {
+    correction = -1;
+  } else if (orientationDiff < -30) {
+    correction = 1;
+  } else if (orientationDiff > 0) {
+    correction = -1 * (Output2 / 35);
+  } else if (orientationDiff < 0) {
+    correction = (Output2 / 35);
+  }
+
+  return correction;
+}
+
+void Movement::rotateToGoal(double goalDirection, double speedFactor) {
+    double rotationCorrection = goalCorrection(goalDirection);
+    Serial.println("Rotation Correction: " + String(rotationCorrection));
+  
+    double rotationSpeed = rotationCorrection * speedFactor;
+    Serial.println("Rotation Speed: " + String(rotationSpeed));
+
+    if (rotationSpeed > 1) {
+        rotationSpeed = 1;
+    } else if (rotationSpeed < -1) {
+        rotationSpeed = -1;
+    }
+
+    this->FLMotor.setSpeed(-rotationSpeed);
+    this->FRMotor.setSpeed(-rotationSpeed);
+    this->BLMotor.setSpeed(-rotationSpeed);
+    this->BRMotor.setSpeed(-rotationSpeed);
+}
+
 // Need to add orientation to the movement function
-void Movement::movement(double intended_movement_angle, double speedfactor) {
+void Movement::movement(double intended_movement_angle, double speedfactor, double desiredOrientation) {
   intended_movement_angle -= 180;
 
   if (intended_movement_angle < 0) {
@@ -52,7 +96,7 @@ void Movement::movement(double intended_movement_angle, double speedfactor) {
     powerRR = powerRR / max_power;
     powerRL = powerRL / max_power;
 
-    double correction = findCorrection();
+    double correction = findCorrection(desiredOrientation);
 
     powerFR -= correction;
     powerFL -= correction;

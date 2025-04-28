@@ -43,13 +43,18 @@ LineDetection line;
 Calibration calibration(line, compassSensor);
 BallFinding ballFinding;
 Switches switches;
-Goal goal(compassSensor);
+Goal goal(compassSensor, switches);
 
 elapsedMillis orbitBallTimer;
 elapsedMillis lineAvoidanceTimer;
 
 bool ballInFront = false;
 int lineCount = 0;
+
+double prevDesiredOrientation = 0;
+double desiredOrientation = 0;
+
+int haveBallThreshold = 400;
 
 
 void setup() {
@@ -72,8 +77,9 @@ void setup() {
   pinMode(kicker, OUTPUT);
 
   Serial.begin(9600);
-
+  Serial2.begin(9600);
   compassSensor.callibrate();
+  // goal.beginCamera();
 }
 
 void testingballSensors() {
@@ -168,10 +174,22 @@ void testingMotors2() {
   analogWrite(BLEnable, 150);
 }
 
+void testingCamera() {
+  goal.retrieveAngle();
+}
+
 void process() {
   if(switches.isStart()) {
     // Serial.println("Start switch is on");
     // Serial.println("Line Angle to move at: " + String(line.Output()));
+    desiredOrientation = goal.retrieveAngle();
+
+    if (desiredOrientation == 999) {
+      desiredOrientation = 0;
+    } else {
+        desiredOrientation = compassSensor.currentOffset() - desiredOrientation;
+    }
+
     double lineAngle = line.Output();
     double orbitAngle = ballFinding.orbit(ballFinding.ballAngle());
 
@@ -219,23 +237,25 @@ void process() {
         Serial.println();
         Serial.println();
         Serial.println();
-        movement.movement(orbitAngle, 0.55);
+        // movement.movement(orbitAngle, 0.55, 0);
+        movement.movement(0,0.55,0);
         lineCount = 0;
       } else {
         lineCount++;
-        movement.movement(lineAngle, 0.75);
+        movement.movement(lineAngle, 0.75, 0);
       }
       // }
         // Serial.println("Line Angle to move at: " + String(lineAngle));
     } 
     else {
-        movement.movement(orbitAngle, 0.55);
+        movement.movement(orbitAngle, 0.55, 0);
         // Serial.println("Ball Orbit: " + String(orbitAngle));
         if (orbitAngle == 0) {
           if (!ballInFront) {
               ballInFront = true;
               orbitBallTimer = 0;
           } else if (orbitBallTimer >= 500) {
+              movement.rotateToGoal(desiredOrientation, 0.3);
               goal.score();
           }
       } else {
@@ -245,8 +265,6 @@ void process() {
     Serial.println("Ball Angle: " + String(ballFinding.ballAngle()));
     Serial.println("Ball Orbit: " + String(ballFinding.orbit(ballFinding.ballAngle())));
 
-  
-
     // testingLineAngle();
     // Serial.println("Chord length: " + String(line.getChord()));
     // Serial.println("Avoidance angle: " + String(line.Output()));
@@ -254,6 +272,7 @@ void process() {
     // line.lineDetected = false;
   } else if (switches.isCompassCalibration()) {
     Serial.println("Callibrating Compass");
+    movement.stop();
     calibration.calibrateCompassSensor();
     compassdone = true;
     if (compassdone && !compassDone2) {
@@ -285,19 +304,75 @@ void process() {
   }
 }
 
+void testingMovementWithCompass(double angle, double speedFactor, double desiredOrientation) {
+  if (switches.isCompassCalibration()) {
+    movement.stop();
+    calibration.calibrateCompassSensor();
+    Serial.println("Callibrating Compass Sensor");
+    compassdone = true;
+    if (compassdone && !compassDone2) {
+        compassDone2 = true;
+        FL.setSpeed(0.3);
+        delay(400);
+    }
+  } else {
+    movement.movement(angle,speedFactor,desiredOrientation);
+  }
+}
+
+void testingRotateToGoal(double desiredOrientation, double speedFactor) {
+  if(switches.isStart()) {
+    // Serial.println("Start switch is on");
+    // Serial.println("Line Angle to move at: " + String(line.Output()));
+    // desiredOrientation = goal.retrieveAngle();
+
+    double orbit_val = ballFinding.orbit(ballFinding.ballAngle());
+    movement.movement(orbit_val, 0.55, desiredOrientation);
+
+  } else if (switches.isCompassCalibration()) {
+    Serial.println("Callibrating Compass");
+    movement.stop();
+    calibration.calibrateCompassSensor();
+    compassdone = true;
+    if (compassdone && !compassDone2) {
+        compassDone2 = true;
+        FL.setSpeed(0.3);
+        delay(400);
+    }
+    movement.stop();
+  } else {
+      movement.stop();
+    }
+}
 
 void loop() {
   // process();
+
+  // testingCamera();
+  // Serial.println();
   // delay(400);
+
+  // testingMovementWithCompass(45,0.6,15);
+
+  // testingCamera();
+
+  testingRotateToGoal(goal.retrieveAngle(), 0.45);
+
+  // Serial.println("Hello");
+  // if (Serial2.available()) {
+  //   char c = Serial2.read();
+  //   Serial.println(c);  // Just print each character as it comes
+  // }
+
+    //  if (Serial2.available()) {
+    //     if (Serial2.read() == 0xAA) { // Sync byte detected
+    //         while (Serial2.available() < 4); // wait for full 4 bytes
+    //         int value = 0;
+    //         Serial2.readBytes((char*)&value, sizeof(value));
+    //         Serial.println("Goal Angle from OpenMV: " + String(value));
+    //     }
+    // }
+
+
 }
-
-/*
-Orbit with correction
-Line avoidance
-Kicker
-
-Defense
-
-
-*/
 

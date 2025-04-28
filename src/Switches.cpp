@@ -16,3 +16,11 @@ bool Switches::isStart() {
 bool Switches::isCalibrateLine() {
     return digitalRead(calibrateLinePin) == HIGH;
 }
+
+char Switches::getGoalColor() {
+    if (digitalRead(goalColorPin) == HIGH) {
+        return 'y';
+    } else {
+        return 'b';
+    }
+}

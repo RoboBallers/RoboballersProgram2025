@@ -2,11 +2,12 @@
 #define GOAL_H
 #include <elapsedMillis.h>
 #include <CompassSensor.h>
+#include <Switches.h>
 
 class Goal {
     public:
-        Goal(CompassSensor& CompassSensor);
-        double retrieveAngle();
+        Goal(CompassSensor& CompassSensor, Switches& switches);
+        int retrieveAngle();
         double AngleToMovetoGoal();
         void score();
         void beginCamera();
@@ -20,6 +21,7 @@ class Goal {
 
     private:
         CompassSensor& compassSensor;
+        Switches& switches;
         int kickerPin = 26;
         elapsedMillis timer;
         elapsedMillis active;
