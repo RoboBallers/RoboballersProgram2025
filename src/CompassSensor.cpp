@@ -33,9 +33,9 @@ int CompassSensor::getOrientation() {
 // range between -180 and 180
 int CompassSensor::currentOffset() {
   int offset = getOrientation() - this->zeroedAngle;
-  Serial.println("Current Orientation: " + String(getOrientation()));
-  Serial.println("Zeroed Angle: " + String(this->zeroedAngle));
-  Serial.println("Calculated offset: - Orientation Diff: " + String(offset));
+  // Serial.println("Current Orientation: " + String(getOrientation()));
+  // Serial.println("Zeroed Angle: " + String(this->zeroedAngle));
+  // Serial.println("Calculated offset: - Orientation Diff: " + String(offset));
 
   if (offset < -180) {
     return offset + 360; 

@@ -41,16 +41,16 @@ void Goal::sendColor(char color) {
 
 
 // double Goal::retrieveAngle() {
-//     double value = 0.0;
-//     uint8_t *data = reinterpret_cast<uint8_t *>(&value);
+//     int value = 0;
 
-//     if (Serial2.available() >= sizeof(double)) {
-//         for (size_t i = 0; i < sizeof(double); i++) {
-//             data[i] = Serial2.read();
+//     sendColor(switches.getGoalColor());
+//     if (Serial2.available()) {
+//         if (Serial2.read() == 0xAA) { // Sync byte detected
+//             while (Serial2.available() < 4); // wait for full 4 bytes
+//             int value = 0;
+//             Serial2.readBytes((char*)&value, sizeof(value));
+//             Serial.println("Goal Angle from OpenMV: " + String(value));
 //         }
-//         return value;
 //     }
-
-//     Serial.println("ERROR: COULD NOT READ FROM OPENMV");
-//     return 0.0;
 // }
+

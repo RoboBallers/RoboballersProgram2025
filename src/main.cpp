@@ -46,7 +46,10 @@ Switches switches;
 Goal goal(compassSensor);
 
 elapsedMillis orbitBallTimer;
+elapsedMillis lineAvoidanceTimer;
+
 bool ballInFront = false;
+int lineCount = 0;
 
 
 void setup() {
@@ -170,6 +173,8 @@ void process() {
     // Serial.println("Start switch is on");
     // Serial.println("Line Angle to move at: " + String(line.Output()));
     double lineAngle = line.Output();
+    double orbitAngle = ballFinding.orbit(ballFinding.ballAngle());
+
 
     //   if (line.getChord() > 0.4 && lineAngle != -1) {
     //     movement.movement(lineAngle,0.6);
@@ -196,15 +201,36 @@ void process() {
 
 
     if (lineAngle != -1 && line.getChord() > 0.25) {
-      // while (line.lineDetectedFunc()) {
-        movement.movement(lineAngle, 0.6);
+      if (lineCount == 0 && lineAvoidanceTimer > 0) {
+        lineAvoidanceTimer = 0;
+      }
+      if (lineCount >= 7) {
+        Serial.println("Line count passed");
+        Serial.println();
+        Serial.println();
+        Serial.println();
+        Serial.println();
+        Serial.println();
+        Serial.println();
+        Serial.println();
+        Serial.println();
+        Serial.println();
+        Serial.println();
+        Serial.println();
+        Serial.println();
+        Serial.println();
+        movement.movement(orbitAngle, 0.55);
+        lineCount = 0;
+      } else {
+        lineCount++;
+        movement.movement(lineAngle, 0.75);
+      }
       // }
-        Serial.println("Line Angle to move at: " + String(lineAngle));
+        // Serial.println("Line Angle to move at: " + String(lineAngle));
     } 
     else {
-        double orbitAngle = ballFinding.orbit(ballFinding.ballAngle());
         movement.movement(orbitAngle, 0.55);
-        Serial.println("Ball Orbit: " + String(orbitAngle));
+        // Serial.println("Ball Orbit: " + String(orbitAngle));
         if (orbitAngle == 0) {
           if (!ballInFront) {
               ballInFront = true;
@@ -252,13 +278,16 @@ void process() {
 
   goal.kickBackground();
 
-  goal.prevGoalDiode = goal.currGoalDiode;
+  if (lineAvoidanceTimer > 1500) {
+    Serial.println("Line avoidance timer being reset");
+    lineAvoidanceTimer = 0;
+    lineCount = 0;
+  }
 }
 
 
 void loop() {
-  process();
-
+  // process();
   // delay(400);
 }
 

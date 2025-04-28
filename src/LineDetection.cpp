@@ -58,7 +58,7 @@ void LineDetection::getIntersectionAngle(int* inputVals) {
         if (vals[i] >  calibrateVals[i]) {
             lineDetectedVals[i] = 1;
             lineDetected = true;
-            Serial.println("Line has been detected");
+            // Serial.println("Line has been detected");
         } else {
             lineDetectedVals[i] = 0;
         }
