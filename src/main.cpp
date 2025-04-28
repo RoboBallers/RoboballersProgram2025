@@ -180,8 +180,8 @@ void testingCamera() {
 
 void process() {
   if(switches.isStart()) {
-    double haveBallAverage = (ballFinding.sensorVals[0] + ballFinding.sensorVals[23] + ballFinding.sensorVals[1]) / 3;
-    // Serial.println("Start switch is on");
+    // double haveBallAverage = (ballFinding.sensorVals[0] + ballFinding.sensorVals[23] + ballFinding.sensorVals[1]) / 3;
+    Serial.println("Start switch is on");
     // Serial.println("Line Angle to move at: " + String(line.Output()));
     // desiredOrientation = goal.retrieveAngle();
 
@@ -204,7 +204,7 @@ void process() {
     double orbitAngle = ballFinding.orbit(ballFinding.ballAngle());
 
 
-    if (lineAngle != -1 && line.getChord() > 0.25) {
+    if (lineAngle != -1 && line.getChord() > 0.15) {
       if (lineCount == 0 && lineAvoidanceTimer > 0) {
         lineAvoidanceTimer = 0;
       }
@@ -223,21 +223,21 @@ void process() {
         Serial.println();
         Serial.println();
         Serial.println();
-        movement.movement(orbitAngle, 0.6, 0);
+        movement.movement(orbitAngle, 0.55, 0);
         // movement.movement(0,0.55,0);
         lineCount = 0;
       } else {
         lineCount++;
-        movement.movement(lineAngle, 0.6, 0);
+        movement.movement(lineAngle, 0.55, 0);
       }
       // }
         // Serial.println("Line Angle to move at: " + String(lineAngle));
     } 
     else {
-        movement.movement(orbitAngle, 0.65, 0);
+        movement.movement(orbitAngle, 0.55, 0);
         // movement.rotateToGoal(desiredOrientation,0.75);
-        // Serial.println("Ball Orbit: " + String(orbitAngle));
-        if (orbitAngle == 0 && haveBallAverage < 400) {
+        Serial.println("Ball Orbit: " + String(orbitAngle));
+        if (orbitAngle == 0) {
           if (!ballInFront) {
               ballInFront = true;
               orbitBallTimer = 0;

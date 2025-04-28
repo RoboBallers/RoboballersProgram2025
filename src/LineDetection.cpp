@@ -37,16 +37,20 @@ void LineDetection::getSensorValues() {
         }
     }
 
+    for (int i = 0; i < 24; i++) {
+        if (vals[i] > 1020 || vals[i] < 5) {
+            if (i == 0) {
+                vals[i] = vals[i+1];
+            } else if (i == 23) {
+                vals[i] = vals[i-1];
+            } else {
+            vals[i] = (vals[i+1] + vals[i-1]) / 2;
+        }
+        }
+    }
+
     // for (int i = 0; i < 24; i++) {
-    //     if (vals[i] > 1020 || vals[i] < 5) {
-    //         if (i == 0) {
-    //             vals[i] = vals[i+1];
-    //         } else if (i == 23) {
-    //             vals[i] = vals[i-1];
-    //         } else {
-    //         vals[i] = (vals[i+1] + vals[i-1]) / 2;
-    //     }
-    //     }
+    //     vals[i] = 1023- vals[i];
     // }
 }
 
